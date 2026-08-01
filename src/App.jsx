@@ -3,6 +3,7 @@ import Scene from './Scene';
 import ExperimentPanel from './ExperimentPanel';
 import InfoPanel from './InfoPanel';
 import MetricsBar from './MetricsBar';
+import PhasePopup from './PhasePopup';
 import { simReducer, initialSimState } from './simulation/SimulationEngine';
 import './index.css';
 
@@ -26,6 +27,9 @@ function App() {
 
       {/* Bottom: Live Metrics */}
       <MetricsBar simState={simState} />
+
+      {/* Phase Popup Notifications */}
+      <PhasePopup phase={simState.phase} />
 
       {/* 3D Canvas */}
       <div className="canvas-container">
