@@ -1,24 +1,40 @@
-import React, { useState } from 'react';
+import React, { useReducer, useState } from 'react';
 import Scene from './Scene';
-import PartInfoPanel from './PartInfoPanel';
+import ExperimentPanel from './ExperimentPanel';
+import InfoPanel from './InfoPanel';
+import MetricsBar from './MetricsBar';
+import { simReducer, initialSimState } from './simulation/SimulationEngine';
 import './index.css';
 
 function App() {
+  const [simState, dispatch] = useReducer(simReducer, initialSimState);
   const [selectedPart, setSelectedPart] = useState(null);
 
   return (
     <div className="app-container">
-      {/* UI Overlay Layer */}
+      {/* Header */}
       <div className="app-header">
-        <h1>E. coli 3D Explorer</h1>
-        <div className="subtitle">Dr. Shee Lab Research Visualization</div>
+        <h1>E. coli Artificial Cell</h1>
+        <div className="subtitle">DNA Damage Response Simulator — Dr. Shee Lab</div>
       </div>
 
-      <PartInfoPanel selectedPart={selectedPart} onSelectPart={setSelectedPart} />
+      {/* Left: Experiment Controls */}
+      <ExperimentPanel simState={simState} dispatch={dispatch} />
 
-      {/* 3D Canvas Layer */}
+      {/* Right: Info Panel (on click) */}
+      <InfoPanel selectedPart={selectedPart} onSelectPart={setSelectedPart} />
+
+      {/* Bottom: Live Metrics */}
+      <MetricsBar simState={simState} />
+
+      {/* 3D Canvas */}
       <div className="canvas-container">
-        <Scene selectedPart={selectedPart} onSelectPart={setSelectedPart} />
+        <Scene
+          simState={simState}
+          dispatch={dispatch}
+          selectedPart={selectedPart}
+          onSelectPart={setSelectedPart}
+        />
       </div>
     </div>
   );

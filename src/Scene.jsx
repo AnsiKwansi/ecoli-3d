@@ -1,33 +1,53 @@
-import React, { useEffect } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
-import { OrbitControls, Environment, ContactShadows } from '@react-three/drei';
+import React, { useEffect, useRef } from 'react';
+import { Canvas, useThree, useFrame } from '@react-three/fiber';
+import { OrbitControls, Environment } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import EcoliModel from './EcoliModel';
 
-// Simple camera controller to jump to specific points
-function CameraController({ selectedPart }) {
-  const { camera } = useThree();
+function UVFlash({ active, onDone }) {
+  const meshRef = useRef();
+  const startTime = useRef(null);
 
-  useEffect(() => {
-    if (selectedPart && selectedPart.cameraPos) {
-      // In a more complex app, use @react-spring/three for smooth animation
-      // Here we just set position
-      camera.position.set(...selectedPart.cameraPos);
-      camera.lookAt(0, 0, 0);
-    } else {
-      camera.position.set(0, 0, 10);
-      camera.lookAt(0, 0, 0);
+  useFrame(({ clock }) => {
+    if (!meshRef.current) return;
+    if (active && startTime.current === null) {
+      startTime.current = clock.elapsedTime;
+      meshRef.current.visible = true;
     }
-  }, [selectedPart, camera]);
+    if (startTime.current !== null) {
+      const elapsed = clock.elapsedTime - startTime.current;
+      const opacity = Math.max(0, 1 - elapsed / 0.6);
+      meshRef.current.material.opacity = opacity;
+      if (elapsed > 0.6) {
+        meshRef.current.visible = false;
+        startTime.current = null;
+        onDone();
+      }
+    }
+  });
 
+  return (
+    <mesh ref={meshRef} visible={false} position={[0, 0, 0]} scale={30}>
+      <sphereGeometry args={[1, 16, 16]} />
+      <meshBasicMaterial color="#a855f7" transparent opacity={0} side={THREE.BackSide} depthWrite={false} />
+    </mesh>
+  );
+}
+
+function SimTicker({ simState, dispatch }) {
+  useFrame((_, delta) => {
+    if (simState.phase !== 'IDLE' && simState.phase !== 'RESOLVED' && simState.phase !== 'CELL_DEATH') {
+      dispatch({ type: 'TICK', payload: delta * simState.timeScale });
+    }
+  });
   return null;
 }
 
-export default function Scene({ selectedPart, onSelectPart }) {
+export default function Scene({ simState, dispatch, selectedPart, onSelectPart }) {
   return (
     <Canvas
-      camera={{ position: [0, 0, 10], fov: 45 }}
+      camera={{ position: [0, 0, 12], fov: 50 }}
       dpr={[1, 2]}
       gl={{ localClippingEnabled: true }}
     >
@@ -35,27 +55,33 @@ export default function Scene({ selectedPart, onSelectPart }) {
       <directionalLight position={[10, 10, 5]} intensity={1.5} color="#ffffff" />
       <directionalLight position={[-10, 5, -5]} intensity={0.8} color="#ffffff" />
       <spotLight position={[-10, -10, -5]} intensity={0.5} color="#4f46e5" />
-      
-      <EcoliModel selectedPartId={selectedPart?.id} onSelectPart={onSelectPart} />
-      
+
       <Environment preset="city" />
-      
-      <ContactShadows position={[0, -4, 0]} opacity={0.4} scale={20} blur={2} far={4.5} />
-      
+
+      <EcoliModel
+        simState={simState}
+        selectedPartId={selectedPart?.id}
+        onSelectPart={onSelectPart}
+      />
+
+      <UVFlash
+        active={simState.uvFlashActive}
+        onDone={() => dispatch({ type: 'UV_FLASH_DONE' })}
+      />
+
+      <SimTicker simState={simState} dispatch={dispatch} />
+
       <EffectComposer disableNormalPass>
         <Bloom luminanceThreshold={1} mipmapBlur intensity={1.5} />
       </EffectComposer>
 
-      <OrbitControls 
+      <OrbitControls
         enablePan={true}
         enableZoom={true}
-        enableRotate={true}
-        autoRotate={!selectedPart}
-        autoRotateSpeed={0.5}
-        makeDefault
+        autoRotate={false}
+        maxDistance={25}
+        minDistance={4}
       />
-      
-      <CameraController selectedPart={selectedPart} />
     </Canvas>
   );
 }

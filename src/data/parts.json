@@ -1,99 +1,57 @@
 [
   {
-    "id": "capsule",
-    "name": "Capsule",
-    "color": "#60a5fa",
-    "description": "The outermost protective layer of the E. coli bacterium. It provides structural support, prevents dehydration, and protects the cell from phagocytosis.",
-    "position": [0, 0, 0],
-    "cameraPos": [0, 0, 10]
-  },
-  {
-    "id": "cell_wall",
-    "name": "Cell Wall",
-    "color": "#bef264",
-    "description": "A rigid layer of peptidoglycan located just inside the capsule. It gives the bacterium its shape and protects against osmotic pressure.",
-    "position": [0, 0, 0],
-    "cameraPos": [0, 0, 9]
-  },
-  {
-    "id": "plasma_membrane",
-    "name": "Plasma Membrane",
-    "color": "#fb923c",
-    "description": "A phospholipid bilayer just inside the cell wall. It controls the transport of substances in and out of the cell and houses enzymes for energy generation.",
-    "position": [0, 0, 0],
-    "cameraPos": [0, 0, 8]
-  },
-  {
-    "id": "cytoplasm",
-    "name": "Cytoplasm",
-    "color": "#1e3a8a",
-    "description": "The gel-like substance enclosed within the cell membrane. It contains the nucleoid, ribosomes, and various metabolic enzymes.",
-    "position": [-1, -0.5, 0],
-    "cameraPos": [-2, -1, 6]
-  },
-  {
     "id": "nucleoid",
-    "name": "Nucleoid (DNA)",
+    "name": "Nucleoid (Chromosomal DNA)",
     "color": "#fef08a",
-    "description": "The irregularly shaped region within the cell where the genetic material (circular DNA) is localized.",
-    "position": [0, 0, 0],
-    "cameraPos": [2, 1, 6]
+    "description": "The irregularly shaped region within the cell where the ~4.6 million base pair circular chromosome is localized. UV radiation causes thymine dimers and double-strand breaks along this DNA."
   },
   {
     "id": "ribosomes",
     "name": "Ribosomes",
     "color": "#a855f7",
-    "description": "Complex molecular machines found within the cytoplasm that serve as the site of biological protein synthesis (translation).",
-    "position": [1, 0.5, 0],
-    "cameraPos": [4, 2, 4]
-  },
-  {
-    "id": "flagella",
-    "name": "Flagella",
-    "color": "#94a3b8",
-    "description": "Long, whip-like appendages used for cellular locomotion. They act like propellers to move the bacterium through liquid.",
-    "position": [-3.5, 0, 0],
-    "cameraPos": [-7, 2, 5]
-  },
-  {
-    "id": "pili",
-    "name": "Pili / Fimbriae",
-    "color": "#e2e8f0",
-    "description": "Hair-like appendages on the surface of the cell used for attachment to surfaces and other cells, aiding in infection and DNA transfer.",
-    "position": [0, 2, 0],
-    "cameraPos": [0, 4, 6]
+    "description": "Complex molecular machines (70S in bacteria) that translate mRNA into proteins. During the SOS response, ribosomes translate upregulated repair genes."
   },
   {
     "id": "gamgfp",
     "name": "GamGFP (DSB Sensor)",
     "color": "#22c55e",
-    "description": "A fusion of bacteriophage Mu Gam and Green Fluorescent Protein (GFP) developed in the 2013 eLife paper. Gam is a DNA end-binding protein. When fused to GFP, it forms bright green foci exactly at the sites of double-strand breaks.",
-    "position": [0, 0, 0],
-    "cameraPos": [-1, -1, 4],
+    "description": "A fusion of bacteriophage Mu Gam protein and Green Fluorescent Protein. Gam binds to DNA double-strand break ends, forming bright green fluorescent foci that mark DSB locations in real time.",
     "reference": {
       "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., Magnan, D., Rosenberg, S. M., Frisch, R. L., & Hastings, P. J. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
       "url": "https://elifesciences.org/articles/1222"
     }
   },
   {
-    "id": "tetr_mcherry",
-    "name": "TetR-mCherry Reporter",
+    "id": "reca",
+    "name": "RecA Filaments",
+    "color": "#fb923c",
+    "description": "RecA protein polymerizes on single-stranded DNA at DSB sites, forming nucleoprotein filaments. These filaments catalyze homologous recombination for repair and also trigger the SOS response by stimulating LexA auto-cleavage.",
+    "reference": {
+      "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., Magnan, D., Rosenberg, S. M., Frisch, R. L., & Hastings, P. J. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
+      "url": "https://elifesciences.org/articles/1222"
+    }
+  },
+  {
+    "id": "lexa",
+    "name": "LexA Repressor",
+    "color": "#94a3b8",
+    "description": "LexA is a transcriptional repressor that keeps SOS response genes silenced under normal conditions. When RecA filaments form at DSBs, they stimulate LexA to auto-cleave, derepressing ~40 SOS genes including DNA repair enzymes."
+  },
+  {
+    "id": "recbcd",
+    "name": "RecBCD Enzyme",
+    "color": "#d946ef",
+    "description": "A bacterial helicase-nuclease that processes broken DNA ends during homologous recombination repair. GamGFP competes with RecBCD by capping DNA ends first.",
+    "reference": {
+      "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., Magnan, D., Rosenberg, S. M., Frisch, R. L., & Hastings, P. J. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
+      "url": "https://elifesciences.org/articles/1222"
+    }
+  },
+  {
+    "id": "dsb",
+    "name": "Double-Strand Break (DSB)",
     "color": "#ef4444",
-    "description": "A fusion of the Tet Repressor and mCherry (red fluorescent protein). It binds to a specific chromosomal array (tetO) to mark a fixed genomic locus, forming a red fluorescent focus.",
-    "position": [0, 0, 0],
-    "cameraPos": [1, 1, 4],
-    "reference": {
-      "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., Magnan, D., Rosenberg, S. M., Frisch, R. L., & Hastings, P. J. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
-      "url": "https://elifesciences.org/articles/1222"
-    }
-  },
-  {
-    "id": "coloc_yellow",
-    "name": "Co-localization (Yellow)",
-    "color": "#eab308",
-    "description": "When a double-strand break occurs exactly at the marked tetO locus, GamGFP (green) and TetR-mCherry (red) bind to the exact same region. The overlapping fluorescent signals create a yellow focus, visually proving GamGFP specifically targets DSBs.",
-    "position": [0, 0, 0],
-    "cameraPos": [1.5, -0.5, 4],
+    "description": "A severe form of DNA damage where both strands of the double helix are severed. UV radiation and environmental toxins can induce DSBs directly or indirectly via replication fork collapse.",
     "reference": {
       "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., Magnan, D., Rosenberg, S. M., Frisch, R. L., & Hastings, P. J. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
       "url": "https://elifesciences.org/articles/1222"
@@ -103,48 +61,40 @@
     "id": "plasmids",
     "name": "Plasmid DNA",
     "color": "#2dd4bf",
-    "description": "Small, extra-chromosomal circular DNA molecules. The red plasmid represents a reporter plasmid expressing TetR-mCherry, and the larger one can represent an F conjugative plasmid used to study replication fork collapses.",
-    "position": [-1.5, 1, 0],
-    "cameraPos": [-3, 2, 4],
+    "description": "Small, extra-chromosomal circular DNA molecules used to express reporter constructs like GamGFP and TetR-mCherry in the Shee Lab's experimental system.",
     "reference": {
       "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., Magnan, D., Rosenberg, S. M., Frisch, R. L., & Hastings, P. J. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
       "url": "https://elifesciences.org/articles/1222"
     }
   },
   {
-    "id": "dsb",
-    "name": "Double-Strand Break (DSB)",
-    "color": "#000000",
-    "description": "A severe form of DNA damage where both strands of the double helix are severed. If left unrepaired, it can lead to cell death or genomic instability.",
-    "position": [0, 0, 0],
-    "cameraPos": [-1, -1, 3],
-    "reference": {
-      "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., Magnan, D., Rosenberg, S. M., Frisch, R. L., & Hastings, P. J. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
-      "url": "https://elifesciences.org/articles/1222"
-    }
+    "id": "capsule",
+    "name": "Capsule",
+    "color": "#60a5fa",
+    "description": "The outermost protective layer of the E. coli bacterium."
   },
   {
-    "id": "iscei",
-    "name": "I-SceI Endonuclease",
-    "color": "#06b6d4",
-    "description": "A restriction enzyme used in the eLife paper experiments. It induces a targeted, site-specific double-strand break near the tetO array, allowing the researchers to control exactly where and when the DNA breaks.",
-    "position": [0, 0, 0],
-    "cameraPos": [-1.5, -1.5, 4],
-    "reference": {
-      "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., Magnan, D., Rosenberg, S. M., Frisch, R. L., & Hastings, P. J. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
-      "url": "https://elifesciences.org/articles/1222"
-    }
+    "id": "cell_wall",
+    "name": "Cell Wall",
+    "color": "#bef264",
+    "description": "A rigid layer of peptidoglycan that gives the bacterium its shape."
   },
   {
-    "id": "recbcd",
-    "name": "RecBCD Enzyme",
-    "color": "#d946ef",
-    "description": "A bacterial exonuclease that normally degrades broken DNA ends. GamGFP competes directly with RecBCD by capping the DNA ends, preventing degradation and allowing the break to be visualized.",
-    "position": [0, 0, 0],
-    "cameraPos": [-0.5, -1.5, 4],
-    "reference": {
-      "title": "Engineered proteins detect spontaneous DNA breakage in human and bacterial cells (eLife 2013)",
-      "url": "https://elifesciences.org/articles/1222"
-    }
+    "id": "plasma_membrane",
+    "name": "Plasma Membrane",
+    "color": "#fb923c",
+    "description": "A phospholipid bilayer controlling transport in and out of the cell."
+  },
+  {
+    "id": "flagella",
+    "name": "Flagella",
+    "color": "#94a3b8",
+    "description": "Helical appendages used for cellular locomotion."
+  },
+  {
+    "id": "pili",
+    "name": "Pili / Fimbriae",
+    "color": "#e2e8f0",
+    "description": "Fine hair-like appendages on the cell surface used for attachment."
   }
 ]
