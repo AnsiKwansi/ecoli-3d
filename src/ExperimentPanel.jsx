@@ -7,8 +7,8 @@ export default function ExperimentPanel({ simState, dispatch }) {
   return (
     <div className="experiment-panel">
       <div className="panel-header">
-        <h2>Experiment Controls</h2>
-        <div className="panel-subtitle">DNA Damage Response Simulator</div>
+        <h2>In-Vivo Controls</h2>
+        <div className="panel-subtitle">In-Vivo Cellular Experiment</div>
       </div>
 
       {/* UV Dose Slider */}

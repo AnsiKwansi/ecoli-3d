@@ -16,7 +16,7 @@ function App() {
       {/* Header */}
       <div className="app-header">
         <h1>E. coli Artificial Cell</h1>
-        <div className="subtitle">DNA Damage Response Simulator — Dr. Shee Lab</div>
+        <div className="subtitle">In-Vivo DNA Damage Response Simulator — Dr. Shee Lab</div>
       </div>
 
       {/* Left: Experiment Controls */}
