@@ -9,13 +9,9 @@ function App() {
   return (
     <div className="app-container">
       {/* UI Overlay Layer */}
-      <div className="header">
-        <h1>
-          E. coli <span>Explorer</span>
-        </h1>
-        <p>
-          Interactive 3D schematic of an Escherichia coli bacterium. Rotate and zoom to explore.
-        </p>
+      <div className="app-header">
+        <h1>E. coli 3D Explorer</h1>
+        <div className="subtitle">Dr. Shee Lab Research Visualization</div>
       </div>
 
       <PartInfoPanel selectedPart={selectedPart} onSelectPart={setSelectedPart} />

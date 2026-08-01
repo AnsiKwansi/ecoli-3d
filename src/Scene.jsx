@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows } from '@react-three/drei';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import EcoliModel from './EcoliModel';
 
@@ -28,9 +29,11 @@ export default function Scene({ selectedPart, onSelectPart }) {
     <Canvas
       camera={{ position: [0, 0, 10], fov: 45 }}
       dpr={[1, 2]}
+      gl={{ localClippingEnabled: true }}
     >
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[10, 10, 5]} intensity={1} color="#ffffff" />
+      <ambientLight intensity={1.2} />
+      <directionalLight position={[10, 10, 5]} intensity={1.5} color="#ffffff" />
+      <directionalLight position={[-10, 5, -5]} intensity={0.8} color="#ffffff" />
       <spotLight position={[-10, -10, -5]} intensity={0.5} color="#4f46e5" />
       
       <EcoliModel selectedPartId={selectedPart?.id} onSelectPart={onSelectPart} />
@@ -39,6 +42,10 @@ export default function Scene({ selectedPart, onSelectPart }) {
       
       <ContactShadows position={[0, -4, 0]} opacity={0.4} scale={20} blur={2} far={4.5} />
       
+      <EffectComposer disableNormalPass>
+        <Bloom luminanceThreshold={1} mipmapBlur intensity={1.5} />
+      </EffectComposer>
+
       <OrbitControls 
         enablePan={true}
         enableZoom={true}

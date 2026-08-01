@@ -1,38 +1,51 @@
 import React from 'react';
-import { Info, X } from 'lucide-react';
 
 export default function PartInfoPanel({ selectedPart, onSelectPart }) {
   if (!selectedPart) {
     return (
-      <div className="glass-panel helper-toast">
-        <Info size={18} color="#60a5fa" />
-        <span>Click on any labeled part to explore its biological function.</span>
+      <div className="instructions">
+        Select a labeled structure to explore its function
       </div>
     );
   }
 
   return (
-    <div className="glass-panel info-panel">
-      <div className="info-header">
-        <h2>{selectedPart.name}</h2>
+    <div className="info-panel visible">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+        <h2 style={{ color: selectedPart.color || '#fff', background: 'none', WebkitTextFillColor: 'initial' }}>
+          {selectedPart.name}
+        </h2>
         <button 
           onClick={() => onSelectPart(null)}
-          className="close-btn"
+          style={{ 
+            background: 'none', border: 'none', color: '#94a3b8', 
+            cursor: 'pointer', fontSize: '1.25rem', padding: '0 4px' 
+          }}
         >
-          <X size={18} />
+          ✕
         </button>
       </div>
       
-      <div className="info-desc">
-        {selectedPart.description}
-      </div>
+      <p>{selectedPart.description}</p>
       
-      <div className="info-fact">
-        <div className="fact-title">Fast Fact</div>
-        <div className="fact-text">
-          E. coli is a gram-negative, facultative anaerobic, rod-shaped bacterium commonly found in the lower intestine of warm-blooded organisms.
+      {selectedPart.reference && (
+        <div style={{ 
+          marginTop: '1.5rem', 
+          paddingTop: '1rem', 
+          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+          fontSize: '0.8rem'
+        }}>
+          <div style={{ color: '#94a3b8', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Reference</div>
+          <a 
+            href={selectedPart.reference.url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ color: '#60a5fa', textDecoration: 'none', lineHeight: 1.4, display: 'inline-block' }}
+          >
+            {selectedPart.reference.title} ↗
+          </a>
         </div>
-      </div>
+      )}
     </div>
   );
 }
