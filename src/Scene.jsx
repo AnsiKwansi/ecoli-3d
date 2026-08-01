@@ -43,19 +43,21 @@ function SimTicker({ simState, dispatch }) {
   return null;
 }
 
-export default function Scene({ simState, dispatch, selectedPart, onSelectPart }) {
+export default function Scene({ simState, dispatch, selectedPart, onSelectPart, theme }) {
+  const isLight = theme === 'light';
+
   return (
     <Canvas
       camera={{ position: [0, 0, 12], fov: 50 }}
       dpr={[1, 2]}
       gl={{ localClippingEnabled: true }}
     >
-      <ambientLight intensity={1.2} />
-      <directionalLight position={[10, 10, 5]} intensity={1.5} color="#ffffff" />
-      <directionalLight position={[-10, 5, -5]} intensity={0.8} color="#ffffff" />
-      <spotLight position={[-10, -10, -5]} intensity={0.5} color="#4f46e5" />
+      <ambientLight intensity={isLight ? 1.6 : 1.2} />
+      <directionalLight position={[10, 10, 5]} intensity={isLight ? 1.8 : 1.5} color="#ffffff" />
+      <directionalLight position={[-10, 5, -5]} intensity={isLight ? 1.0 : 0.8} color="#ffffff" />
+      <spotLight position={[-10, -10, -5]} intensity={isLight ? 0.6 : 0.5} color="#4f46e5" />
 
-      <Environment preset="city" />
+      <Environment preset={isLight ? "studio" : "city"} />
 
       <EcoliModel
         simState={simState}
@@ -80,3 +82,4 @@ export default function Scene({ simState, dispatch, selectedPart, onSelectPart }
     </Canvas>
   );
 }
+
