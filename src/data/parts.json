@@ -1,0 +1,37 @@
+[
+  {
+    "id": "capsule",
+    "name": "Capsule / Cell Wall",
+    "description": "The outermost protective layer of the E. coli bacterium. It provides structural support, prevents dehydration, and protects the cell from phagocytosis.",
+    "position": [0, 0, 0],
+    "cameraPos": [0, 0, 10]
+  },
+  {
+    "id": "nucleoid",
+    "name": "Nucleoid (DNA)",
+    "description": "The irregularly shaped region within the cell where the genetic material (circular DNA) is localized. Unlike eukaryotes, it is not enclosed by a nuclear membrane.",
+    "position": [0, 0, 0],
+    "cameraPos": [2, 1, 6]
+  },
+  {
+    "id": "ribosomes",
+    "name": "Ribosomes",
+    "description": "Complex molecular machines found within all living cells that serve as the site of biological protein synthesis (translation).",
+    "position": [1, 0.5, 0],
+    "cameraPos": [4, 2, 4]
+  },
+  {
+    "id": "flagella",
+    "name": "Flagella",
+    "description": "Long, whip-like appendages used for cellular locomotion. E. coli has peritrichous flagella, meaning they are distributed over the entire surface of the cell.",
+    "position": [-3, 0, 0],
+    "cameraPos": [-6, 2, 5]
+  },
+  {
+    "id": "cytoplasm",
+    "name": "Cytoplasm",
+    "description": "The gel-like substance enclosed within the cell membrane. It contains the nucleoid, ribosomes, and various metabolic enzymes.",
+    "position": [-1, -0.5, 0],
+    "cameraPos": [-2, -1, 5]
+  }
+]
