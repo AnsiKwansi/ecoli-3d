@@ -1,46 +1,40 @@
 # 3D E. coli Explorer
 
-An interactive, educational 3D visualization of an *Escherichia coli* bacterium, built with React and React Three Fiber. This application allows users to explore various cellular components, from the flagella to the nucleoid, in a highly aesthetic, schematic format.
+An interactive, educational 3D visualization of an *Escherichia coli* bacterium. This application allows users to explore the microscopic world and understand the anatomy and complex biological machinery of a living bacterial cell.
 
 **[Live Demo](https://AnsiKwansi.github.io/ecoli-3d/)**
 
-## Architecture & Technology Stack
+## What It Does
 
-This project is built using a modern web stack tailored for high-performance 3D graphics:
-- **React (v19)**: Core UI framework managing application state, UI components, and the information overlay.
-- **Vite**: Ultra-fast build tool and development server.
-- **Three.js & React Three Fiber (@react-three/fiber)**: The 3D rendering engine. React Three Fiber provides a React-declarative wrapper around Three.js, allowing us to build the 3D scene using reusable components.
-- **Drei (@react-three/drei)**: A growing collection of useful helpers and abstractions for React Three Fiber (used for OrbitControls, Environment, ContactShadows, Html overlays).
-- **Postprocessing (@react-three/postprocessing)**: Adds advanced visual effects like bloom/glow for a premium medical-tech aesthetic.
+The **3D E. coli Explorer** serves as a digital microscope and interactive textbook. It visualizes the internal and external structures of an *E. coli* cell in a highly aesthetic, schematic format. 
 
-## System Architecture
+Users can explore key cellular components, including:
+- **The Cell Envelope**: Observe the layered defense of the capsule, cell wall, and plasma membrane.
+- **Locomotion and Adhesion**: Inspect the helical **flagella** used for swimming and the hair-like **pili** used for attachment.
+- **Genetic Material**: Dive into the center of the cell to see the highly folded, supercoiled **nucleoid** (chromosomal DNA) and separate circular **plasmids**.
+- **Protein Synthesis**: Witness macromolecular crowding through hundreds of **ribosomes** dispersed throughout the cytoplasm.
+- **Molecular Machinery**: Locate specific enzymes and sensors, such as the **RecBCD** enzyme, **I-SceI** endonuclease, and fluorescent reporters like **GamGFP** and **TetR-mCherry** used in genetic engineering and research.
 
-The application follows a decoupled architecture separating the 3D canvas from the HTML UI overlay:
+## How It Works (User Experience)
 
-### 1. `App.jsx` (The Shell)
-The entry point that orchestrates the layout. It holds the global state (`selectedPart`) and renders two distinct layers:
-- The **UI Overlay Layer** containing the header and the `PartInfoPanel`.
-- The **3D Canvas Layer** rendering the `Scene`.
+- **Interactive Hotspots**: The 3D model is overlaid with clickable labels. Clicking on any structure (or its label) highlights the component and opens an information panel.
+- **Dynamic Camera**: When a specific part is selected, the camera automatically glides and zooms in to focus on that molecular structure, allowing for up-close inspection.
+- **Information Panel**: A dedicated UI panel provides biological context, explaining the function and significance of the selected component in real-time.
 
-### 2. `Scene.jsx` (The 3D Environment)
-Manages the global 3D environment setup.
-- **Lighting & Environment**: Defines ambient lights, spotlights, and the `Environment` map to provide realistic reflections and soft shading.
-- **Post-processing**: Applies `Bloom` effects to emissive materials.
-- **Camera Controls**: Uses `OrbitControls` for user interaction and a custom `CameraController` to smoothly animate and focus on specific parts when clicked.
+## How It Works (Under the Hood)
 
-### 3. `EcoliModel.jsx` (The Core Model)
-This is the heart of the 3D visualization. Instead of relying entirely on heavy external 3D models (like GLTF/GLB), the E. coli structure is generated **procedurally** using mathematical curves and geometries:
-- **Capsule & Membranes**: Built using `capsuleGeometry` with varying scale and opacity to represent the cell wall and plasma membrane.
-- **Nucleoid & Plasmids**: Generated dynamically using 3D random walks and Lissajous curves (`CatmullRomCurve3`) mapped to `tubeGeometry`.
-- **Ribosomes**: Rendered using an `instancedMesh` to display hundreds of ribosomes (macromolecular crowding) efficiently with a single draw call.
-- **Hotspots**: Utilizes Drei's `<Html>` component to anchor DOM elements perfectly to 3D coordinates, updating their position during camera rotation.
+Rather than using a pre-built, static 3D model file, this application **procedurally generates** the biological structures using mathematics and code. This allows for dynamic, organic-looking shapes and high performance in the browser.
 
-### 4. `PartInfoPanel.jsx` & `data/parts.json` (Data Layer)
-The UI side panel that dynamically displays biological context based on the user's selection. All descriptions, names, and color themes are decoupled into a JSON data file for easy content management.
+- **Procedural Geometry**: The highly complex, supercoiled DNA (nucleoid) and plasmids are generated using 3D random walks and mathematical Lissajous curves wrapped in 3D tube geometries. 
+- **Macromolecular Crowding**: To simulate the dense, crowded environment of a real cell, the application uses **Instanced Meshes** to render hundreds of individual ribosomes simultaneously in a single, highly-optimized draw call.
+- **Tech Stack**: 
+  - **React & Vite**: Manages the application state, user interface, and lightning-fast local development.
+  - **Three.js & React Three Fiber**: The core 3D rendering engine that translates React components into WebGL graphics.
+  - **Postprocessing**: Adds advanced visual effects, like the bloom and glow of fluorescent proteins (GFP/mCherry), giving the cell a premium, medical-tech aesthetic.
 
 ## Getting Started
 
-To run the project locally:
+To run the project locally and experiment with the code:
 
 1. Clone the repository
 2. Install dependencies:
