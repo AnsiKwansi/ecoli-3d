@@ -2,32 +2,32 @@ import React, { useState, useEffect, useRef } from 'react';
 
 const PHASE_MESSAGES = {
   IRRADIATED: {
-    title: 'DNA Damage Detected',
-    body: 'UV photons have been absorbed by the DNA, causing thymine dimers and double-strand breaks (DSBs) along the chromosome. The dark break points with red halos represent sites where both strands of the double helix have been severed.',
+    title: 'DNA Lesions & Stress Induced',
+    body: 'Environmental exposure has damaged the bacterial chromosome! UV radiation induces helix-distorting Thymine Dimers (blue spots, repaired via NER) and Double-Strand Breaks (red halos, repaired via HR). Oxidative stressors induce 8-oxoG lesions (yellow spots, repaired via BER).',
     icon: '☢️',
     color: '#ef4444',
   },
   SOS_ACTIVE: {
-    title: 'SOS Response Activated',
-    body: 'RecA protein is polymerizing on single-stranded DNA near the break sites (orange filaments), stimulating LexA repressor to auto-cleave. As LexA degrades, ~40 SOS genes are derepressed. GamGFP (green foci) is binding to the broken DNA ends, competing with RecBCD for access.',
+    title: 'Repair Machinery Activated',
+    body: 'Multi-pathway DNA repair engines assemble: UvrABC excinuclease binds to Thymine Dimers for Nucleotide Excision Repair (NER), DNA Glycosylase binds to oxidative lesions for Base Excision Repair (BER), and GamGFP green foci bind to DSBs alongside RecA filaments to trigger the SOS Response.',
     icon: '🧬',
     color: '#f59e0b',
   },
   REPAIRING: {
-    title: 'Repair Enzymes at Work',
-    body: 'RecBCD helicase-nuclease (purple) is processing the broken DNA ends. Homologous recombination is underway — the cell is using its sister chromosome as a template to accurately repair each double-strand break. Green GamGFP foci will fade as breaks are sealed.',
+    title: 'Active DNA Repair & Mutagenesis',
+    body: 'UvrABC excises pyrimidine dimers, DNA Glycosylase removes damaged bases, and RecBCD/RecA repair double-strand breaks. Under high stress, SOS derepresses error-prone Polymerase IV (DinB), driving Stress-Induced Mutagenesis (SIM) to create survival variants.',
     icon: '🔧',
     color: '#22c55e',
   },
   RESOLVED: {
-    title: 'Cell Survived ✓',
-    body: 'All double-strand breaks have been successfully repaired. The SOS response is winding down as LexA repressor re-accumulates and silences the SOS genes. The cell has returned to normal growth.',
+    title: 'Genome Integrity Restored',
+    body: 'All DNA lesions (dimers, oxidative sites, and DSBs) have been excised and repaired! If high stress forced error-prone Pol IV activity, new mutations (yellow glow) persist in the chromosome, providing evolutionary diversity.',
     icon: '✅',
     color: '#22c55e',
   },
   CELL_DEATH: {
     title: 'Cell Death ✕',
-    body: 'The number of simultaneous DSBs overwhelmed the cell\'s repair capacity. Unrepaired breaks led to chromosome fragmentation and loss of essential genes. The cell membrane has depolarized and the cell is no longer viable.',
+    body: 'The massive accumulation of unrepaired double-strand breaks and helix-distorting lesions overwhelmed the cell\'s NER, BER, and HR repair capacity, causing chromosomal collapse and membrane depolarization.',
     icon: '💀',
     color: '#ef4444',
   },
@@ -44,10 +44,10 @@ export default function PhasePopup({ phase }) {
       setMessage(PHASE_MESSAGES[phase]);
       setVisible(true);
 
-      // Auto-dismiss after 8 seconds (except terminal states)
+      // Auto-dismiss after 9 seconds (except terminal states)
       if (timerRef.current) clearTimeout(timerRef.current);
       if (phase !== 'RESOLVED' && phase !== 'CELL_DEATH') {
-        timerRef.current = setTimeout(() => setVisible(false), 8000);
+        timerRef.current = setTimeout(() => setVisible(false), 9000);
       }
     }
     if (phase === 'IDLE') {
@@ -74,3 +74,4 @@ export default function PhasePopup({ phase }) {
     </div>
   );
 }
+

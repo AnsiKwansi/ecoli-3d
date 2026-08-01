@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import EcoliModel from './EcoliModel';
 
@@ -70,10 +69,6 @@ export default function Scene({ simState, dispatch, selectedPart, onSelectPart }
       />
 
       <SimTicker simState={simState} dispatch={dispatch} />
-
-      <EffectComposer disableNormalPass>
-        <Bloom luminanceThreshold={1} mipmapBlur intensity={1.5} />
-      </EffectComposer>
 
       <OrbitControls
         enablePan={true}

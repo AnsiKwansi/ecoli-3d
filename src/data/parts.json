@@ -35,7 +35,7 @@
     "id": "lexa",
     "name": "LexA Repressor",
     "color": "#94a3b8",
-    "description": "LexA is a transcriptional repressor that keeps SOS response genes silenced under normal conditions. When RecA filaments form at DSBs, they stimulate LexA to auto-cleave, derepressing ~40 SOS genes including DNA repair enzymes."
+    "description": "LexA is a transcriptional repressor that keeps SOS response genes silenced under normal conditions. When RecA filaments form at DSBs, they stimulate LexA to auto-cleavage, derepressing ~40 SOS genes including DNA repair enzymes."
   },
   {
     "id": "recbcd",
@@ -58,6 +58,26 @@
     }
   },
   {
+    "id": "pol4",
+    "name": "DNA Polymerase IV (DinB)",
+    "color": "#f97316",
+    "description": "An error-prone DNA polymerase upregulated during the SOS response. It can bypass lesions in DNA that stall normal replication, but its low fidelity often introduces mutations (Stress-Induced Mutagenesis).",
+    "reference": {
+      "title": "Shee, C., Gibson, J. L., Darrow, M. C., Gonzalez, C., & Rosenberg, S. M. (2011). Impact of a stress-inducible switch to mutagenic repair of DNA breaks on mutation in Escherichia coli. Proceedings of the National Academy of Sciences, 108(33), 13659-13664.",
+      "url": "https://doi.org/10.1073/pnas.1107147108"
+    }
+  },
+  {
+    "id": "mutation",
+    "name": "Genetic Mutation",
+    "color": "#eab308",
+    "description": "A permanent alteration in the DNA sequence. Under high stress, E. coli employs error-prone repair mechanisms (like Pol IV), increasing the mutation rate to potentially acquire traits that help it survive the stress.",
+    "reference": {
+      "title": "Shee, C., Gibson, J. L., Darrow, M. C., Gonzalez, C., & Rosenberg, S. M. (2011). Impact of a stress-inducible switch to mutagenic repair of DNA breaks on mutation in Escherichia coli. Proceedings of the National Academy of Sciences, 108(33), 13659-13664.",
+      "url": "https://doi.org/10.1073/pnas.1107147108"
+    }
+  },
+  {
     "id": "plasmids",
     "name": "Plasmid DNA",
     "color": "#2dd4bf",
@@ -65,6 +85,46 @@
     "reference": {
       "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., Magnan, D., Rosenberg, S. M., Frisch, R. L., & Hastings, P. J. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
       "url": "https://elifesciences.org/articles/1222"
+    }
+  },
+  {
+    "id": "thymine_dimers",
+    "name": "Thymine Dimers (UV Damage)",
+    "color": "#38bdf8",
+    "description": "Covalent linkages between adjacent thymine bases caused by ultraviolet (UV) radiation. Dimers distort the DNA double helix, stalling DNA replication and transcription until repaired by Nucleotide Excision Repair (NER).",
+    "reference": {
+      "title": "Sancar, A. (1996). Mechanisms of DNA excision repair. Science, 272(5264), 995-1001.",
+      "url": "https://doi.org/10.1126/science.272.5264.995"
+    }
+  },
+  {
+    "id": "uvrabc",
+    "name": "UvrABC Excinuclease Complex",
+    "color": "#0ea5e9",
+    "description": "The multi-subunit enzyme complex (UvrA, UvrB, UvrC) that performs Nucleotide Excision Repair (NER). UvrAB scans the DNA for bulky helix-distorting lesions like thymine dimers, and UvrC cleaves single-stranded cuts on both sides of the damage to excise the oligonucleotide.",
+    "reference": {
+      "title": "Sancar, A. (1996). Mechanisms of DNA excision repair. Science, 272(5264), 995-1001.",
+      "url": "https://doi.org/10.1126/science.272.5264.995"
+    }
+  },
+  {
+    "id": "ox_damage",
+    "name": "Oxidative DNA Damage (8-oxoG)",
+    "color": "#eab308",
+    "description": "Lesions such as 8-oxoguanine and apurinic sites caused by reactive oxygen species (ROS) from H₂O₂ exposure. If unrepaired, 8-oxoG mispairs with adenine during replication, leading to GC → TA transversion mutations.",
+    "reference": {
+      "title": "David, S. S., O'Shea, V. L., & Kundu, S. (2007). Base excision repair of oxidative DNA damage. Nature, 447(7147), 941-950.",
+      "url": "https://doi.org/10.1038/nature05978"
+    }
+  },
+  {
+    "id": "glycosylase",
+    "name": "DNA Glycosylase (Fpg / MutM)",
+    "color": "#facc15",
+    "description": "A Base Excision Repair (BER) enzyme that recognizes and flips out oxidized bases like 8-oxoguanine, cleaving the N-glycosidic bond to initiate BER repair and restore genetic integrity.",
+    "reference": {
+      "title": "David, S. S., O'Shea, V. L., & Kundu, S. (2007). Base excision repair of oxidative DNA damage. Nature, 447(7147), 941-950.",
+      "url": "https://doi.org/10.1038/nature05978"
     }
   },
   {

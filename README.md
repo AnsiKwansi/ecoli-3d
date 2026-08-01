@@ -1,55 +1,65 @@
-# 3D E. coli Explorer
+# E. coli Artificial Cell — DNA Damage Response Simulator
 
-An interactive, educational 3D visualization of an *Escherichia coli* bacterium. This application allows users to explore the microscopic world and understand the anatomy and complex biological machinery of a living bacterial cell.
+An interactive 3D in-vivo experimental simulation platform modeling **DNA damage response (DDR) in an engineered artificial *E. coli* cell chassis** subjected to **UV radiation** and **environmental stressors**. Developed for the **Dr. Chandan Shee Lab**.
 
 **[Live Demo](https://AnsiKwansi.github.io/ecoli-3d/)**
 
-## What It Does
+---
 
-The **3D E. coli Explorer** serves as a digital microscope and interactive textbook. It visualizes the internal and external structures of an *E. coli* cell in a highly aesthetic, schematic format. 
+## 🎯 Research Objectives & Compliance
 
-Users can explore key cellular components, including:
-- **The Cell Envelope**: Observe the layered defense of the capsule, cell wall, and plasma membrane.
-- **Locomotion and Adhesion**: Inspect the helical **flagella** used for swimming and the hair-like **pili** used for attachment.
-- **Genetic Material**: Dive into the center of the cell to see the highly folded, supercoiled **nucleoid** (chromosomal DNA) and separate circular **plasmids**.
-- **Protein Synthesis**: Witness macromolecular crowding through hundreds of **ribosomes** dispersed throughout the cytoplasm.
-- **Molecular Machinery**: Locate specific enzymes and sensors, such as the **RecBCD** enzyme, **I-SceI** endonuclease, and fluorescent reporters like **GamGFP** and **TetR-mCherry** used in genetic engineering and research.
+Per Dr. Chandan Shee's directives:
+> *"Artificial cell focusing on DNA damage response against UV radiation and other environmental factors. Focus on in-vivo experiment!"*
 
-## How It Works (User Experience)
+This application simulates the molecular genetics and spatial dynamics of double-strand break (DSB) repair, SOS induction, and fluorescent reporter tracking inside a living cell environment under environmental stress.
 
-- **Interactive Hotspots**: The 3D model is overlaid with clickable labels. Clicking on any structure (or its label) highlights the component and opens an information panel.
-- **Dynamic Camera**: When a specific part is selected, the camera automatically glides and zooms in to focus on that molecular structure, allowing for up-close inspection.
-- **Information Panel**: A dedicated UI panel provides biological context, explaining the function and significance of the selected component in real-time.
+---
 
-## How It Works (Under the Hood)
+## 🔬 In-Vivo Experiment Features
 
-Rather than using a pre-built, static 3D model file, this application **procedurally generates** the biological structures using mathematics and code. This allows for dynamic, organic-looking shapes and high performance in the browser.
+### 1. Environmental Stressors & UV Radiation
+- **UV Exposure Control**: Quantitative slider ($5\text{ to }100\text{ J/m}^2$) to deliver controlled UV irradiation.
+- **Environmental Factors**:
+  - **UV Radiation**: Induces pyrimidine dimers and downstream double-strand DNA breaks.
+  - **Mitomycin C**: Interstrand crosslinker inducing severe replication fork collapse.
+  - **Ciprofloxacin**: Gyrase/topoisomerase IV poison causing persistent DSBs.
+  - **$\text{H}_2\text{O}_2$ (Oxidative Stress)**: Reactive oxygen species inducing single and double strand DNA breakage.
 
-- **Procedural Geometry**: The highly complex, supercoiled DNA (nucleoid) and plasmids are generated using 3D random walks and mathematical Lissajous curves wrapped in 3D tube geometries. 
-- **Macromolecular Crowding**: To simulate the dense, crowded environment of a real cell, the application uses **Instanced Meshes** to render hundreds of individual ribosomes simultaneously in a single, highly-optimized draw call.
-- **Tech Stack**: 
-  - **React & Vite**: Manages the application state, user interface, and lightning-fast local development.
-  - **Three.js & React Three Fiber**: The core 3D rendering engine that translates React components into WebGL graphics.
-  - **Postprocessing**: Adds advanced visual effects, like the bloom and glow of fluorescent proteins (GFP/mCherry), giving the cell a premium, medical-tech aesthetic.
+### 2. Molecular Machinery & In-Vivo Tracking
+- **GamGFP Reporter Foci**: Simulates bacteriophage Gam protein fused to GFP binding explicitly to double-stranded DNA ends.
+- **LexA Cleavage & SOS Response**: Live monitoring of LexA repressor cleavage and % SOS pathway activation.
+- **RecA Filamentation & RecBCD Engine**: Visualized repair complexes assembling at damage sites on the supercoiled nucleoid.
+- **Stress-Induced Mutagenesis (SIM)**: High stress levels upregulate error-prone DNA Polymerase IV (DinB), leading to mutation acquisition.
+- **Cell Viability & Survival Dynamics**: Quantitative tracking of cell viability percentage ($0\% - 100\%$) and cell fate (Resolution vs. Cell Death).
 
-## Getting Started
+---
 
-To run the project locally and experiment with the code:
+## 🛠️ How It Works (Under the Hood)
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
+- **3D Spatial Simulation**: Procedurally generated 3D supercoiled chromosomal nucleoid and reporter plasmids using Catmull-Rom curves.
+- **Instanced Ribosome Crowding**: Over 500 instanced meshes simulating dense cytoplasmic crowding.
+- **State Machine Architecture**: `SimulationEngine.js` models multi-phase cellular kinetics (`IDLE` $\rightarrow$ `IRRADIATED` $\rightarrow$ `SOS_ACTIVE` $\rightarrow$ `REPAIRING` $\rightarrow$ `RESOLVED` / `CELL_DEATH`).
+- **Tech Stack**: React, Vite, Three.js, React Three Fiber, and Postprocessing (Bloom & Fluorescent Foci effects).
 
-## Deployment
+---
 
-The project is configured to automatically build and deploy to GitHub Pages via the `gh-pages` package. 
-To deploy updates:
+## 🚀 Getting Started
+
+### Local Development
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+### Deployment
+To build and deploy updates to GitHub Pages:
 ```bash
 npm run deploy
 ```
+

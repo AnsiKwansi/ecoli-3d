@@ -1,18 +1,24 @@
 import React from 'react';
 
 export default function MetricsBar({ simState }) {
-  const { dsbCount, maxDsbs, gamgfpBound, sosLevel, cellViability, elapsedTime, phase } = simState;
+  const {
+    dsbCount, maxDsbs, gamgfpBound,
+    dimerCount, maxDimers, uvrabcBound,
+    oxCount, maxOx, glycosylaseBound,
+    sosLevel, cellViability, mutationCount, elapsedTime, phase
+  } = simState;
 
   if (phase === 'IDLE') return null;
 
   const formatTime = (seconds) => {
-    const m = Math.floor(seconds / 60);
-    const s = Math.floor(seconds % 60);
-    return `${m}:${s.toString().padStart(2, '0')}`;
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
     <div className="metrics-bar">
+      {/* DSBs & GamGFP */}
       <div className="metric">
         <div className="metric-value" style={{ color: '#ef4444' }}>{dsbCount}</div>
         <div className="metric-label">Active DSBs</div>
@@ -27,8 +33,33 @@ export default function MetricsBar({ simState }) {
         <div className="metric-sub">bound to DSBs</div>
       </div>
 
+      {/* UV Thymine Dimers (if present) */}
+      {maxDimers > 0 && (
+        <>
+          <div className="metric-divider" />
+          <div className="metric">
+            <div className="metric-value" style={{ color: '#38bdf8' }}>{dimerCount}</div>
+            <div className="metric-label">UV Dimers</div>
+            <div className="metric-sub">{uvrabcBound} UvrABC (NER)</div>
+          </div>
+        </>
+      )}
+
+      {/* Oxidative Damage (if present) */}
+      {maxOx > 0 && (
+        <>
+          <div className="metric-divider" />
+          <div className="metric">
+            <div className="metric-value" style={{ color: '#eab308' }}>{oxCount}</div>
+            <div className="metric-label">Oxidative Damage</div>
+            <div className="metric-sub">{glycosylaseBound} Glycosylase (BER)</div>
+          </div>
+        </>
+      )}
+
       <div className="metric-divider" />
 
+      {/* SOS Level */}
       <div className="metric">
         <div className="metric-value" style={{ color: '#f59e0b' }}>{Math.round(sosLevel)}%</div>
         <div className="metric-label">SOS Level</div>
@@ -39,6 +70,16 @@ export default function MetricsBar({ simState }) {
 
       <div className="metric-divider" />
 
+      {/* Mutations */}
+      <div className="metric">
+        <div className="metric-value" style={{ color: '#eab308' }}>{mutationCount}</div>
+        <div className="metric-label">Mutations</div>
+        <div className="metric-sub">acquired</div>
+      </div>
+
+      <div className="metric-divider" />
+
+      {/* Cell Viability */}
       <div className="metric">
         <div className="metric-value" style={{ color: cellViability > 50 ? '#22c55e' : cellViability > 20 ? '#f59e0b' : '#ef4444' }}>
           {Math.round(cellViability)}%
@@ -57,6 +98,7 @@ export default function MetricsBar({ simState }) {
 
       <div className="metric-divider" />
 
+      {/* Timer */}
       <div className="metric">
         <div className="metric-value" style={{ color: '#94a3b8' }}>{formatTime(elapsedTime)}</div>
         <div className="metric-label">Elapsed</div>
@@ -65,3 +107,4 @@ export default function MetricsBar({ simState }) {
     </div>
   );
 }
+

@@ -220,16 +220,102 @@ export default function EcoliModel({ simState, onSelectPart, selectedPartId }) {
                 <meshStandardMaterial color="#22c55e" transparent opacity={0.2} />
               </mesh>
             )}
+            {/* Mutated - bright yellow glowing */}
+            {dsb.state === 'MUTATED' && (
+              <mesh>
+                <sphereGeometry args={[0.1, 12, 12]} />
+                <meshStandardMaterial color="#eab308" emissive="#eab308" emissiveIntensity={2} toneMapped={false} transparent opacity={0.8} />
+              </mesh>
+            )}
           </group>
         ))}
 
-        {/* RecBCD near active DSBs */}
+        {/* Dynamic Thymine Dimers (UV Damage - NER Pathway) */}
+        {simState?.dimerSites?.map((dimer) => (
+          <group key={dimer.id} position={dimer.position}>
+            {dimer.state === 'FRESH' && (
+              <mesh>
+                <sphereGeometry args={[0.09, 10, 10]} />
+                <meshStandardMaterial color="#38bdf8" emissive="#38bdf8" emissiveIntensity={2} toneMapped={false} />
+              </mesh>
+            )}
+            {dimer.state === 'UVRABC_BOUND' && (
+              <group>
+                <mesh>
+                  <sphereGeometry args={[0.09, 10, 10]} />
+                  <meshStandardMaterial color="#0ea5e9" emissive="#0ea5e9" emissiveIntensity={1} />
+                </mesh>
+                {/* UvrABC Excinuclease Complex bound mesh */}
+                <mesh position={[0.06, 0.06, 0]}>
+                  <octahedronGeometry args={[0.1, 0]} />
+                  <meshStandardMaterial color="#0284c7" emissive="#0ea5e9" emissiveIntensity={0.8} />
+                </mesh>
+              </group>
+            )}
+            {dimer.state === 'REPAIRED' && (
+              <mesh>
+                <sphereGeometry args={[0.05, 8, 8]} />
+                <meshStandardMaterial color="#38bdf8" transparent opacity={0.2} />
+              </mesh>
+            )}
+          </group>
+        ))}
+
+        {/* Dynamic Oxidative DNA Damage (H2O2 - BER Pathway) */}
+        {simState?.oxDamageSites?.map((ox) => (
+          <group key={ox.id} position={ox.position}>
+            {ox.state === 'FRESH' && (
+              <mesh>
+                <sphereGeometry args={[0.08, 10, 10]} />
+                <meshStandardMaterial color="#eab308" emissive="#eab308" emissiveIntensity={2.5} toneMapped={false} />
+              </mesh>
+            )}
+            {ox.state === 'GLYCOSYLASE_BOUND' && (
+              <group>
+                <mesh>
+                  <sphereGeometry args={[0.08, 10, 10]} />
+                  <meshStandardMaterial color="#facc15" emissive="#facc15" emissiveIntensity={1} />
+                </mesh>
+                {/* DNA Glycosylase mesh bound */}
+                <mesh position={[-0.05, 0.05, 0]}>
+                  <dodecahedronGeometry args={[0.09, 0]} />
+                  <meshStandardMaterial color="#ca8a04" emissive="#facc15" emissiveIntensity={0.6} />
+                </mesh>
+              </group>
+            )}
+            {ox.state === 'REPAIRED' && (
+              <mesh>
+                <sphereGeometry args={[0.04, 8, 8]} />
+                <meshStandardMaterial color="#eab308" transparent opacity={0.2} />
+              </mesh>
+            )}
+          </group>
+        ))}
+
+        {/* Hotspot Labels for NER & BER Repair Complexes when active */}
+        {simState?.uvrabcBound > 0 && simState?.dimerSites?.find(d => d.state === 'UVRABC_BOUND') && (
+          getLabel('uvrabc', [-1.8, 1.0, 1.2], simState.dimerSites.find(d => d.state === 'UVRABC_BOUND').position)
+        )}
+        {simState?.glycosylaseBound > 0 && simState?.oxDamageSites?.find(o => o.state === 'GLYCOSYLASE_BOUND') && (
+          getLabel('glycosylase', [1.8, -1.0, 1.2], simState.oxDamageSites.find(o => o.state === 'GLYCOSYLASE_BOUND').position)
+        )}
+        {simState?.gamgfpBound > 0 && simState?.dsbSites?.find(d => d.state === 'GAMGFP_BOUND') && (
+          getLabel('gamgfp', [-1.8, -1.2, 1.2], simState.dsbSites.find(d => d.state === 'GAMGFP_BOUND').position)
+        )}
+
+        {/* RecBCD and Pol IV near active DSBs */}
         {simState?.phase === 'REPAIRING' && simState.dsbSites.filter(d => d.state === 'REPAIRING').slice(0, 3).map((dsb, idx) => (
-          <group key={`recbcd-${idx}`} position={[dsb.position[0] + 0.2, dsb.position[1] - 0.1, dsb.position[2]]}>
-            <mesh>
+          <group key={`enzymes-${idx}`} position={[dsb.position[0] + 0.2, dsb.position[1] - 0.1, dsb.position[2]]}>
+            <mesh position={[0,0,0]}>
               <boxGeometry args={[0.12, 0.08, 0.08]} />
               <meshStandardMaterial color={getColor('recbcd')} roughness={0.7} />
             </mesh>
+            {simState.maxDsbs >= 5 && (
+              <mesh position={[0.15,0,0]}>
+                <boxGeometry args={[0.08, 0.08, 0.08]} />
+                <meshStandardMaterial color={getColor('pol4')} roughness={0.5} />
+              </mesh>
+            )}
           </group>
         ))}
 
