@@ -10,6 +10,8 @@ export default function MetricsBar({ simState }) {
 
   if (phase === 'IDLE') return null;
 
+  const isDead = phase === 'CELL_DEATH' || cellViability <= 20;
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -18,6 +20,19 @@ export default function MetricsBar({ simState }) {
 
   return (
     <div className="metrics-bar">
+      {/* Live / Dead Cell Viability Visual Status Badge */}
+      <div className="metric">
+        <div 
+          className="metric-value" 
+          style={{ color: isDead ? '#ef4444' : '#60a5fa', fontSize: '1rem', fontWeight: 800 }}
+        >
+          {isDead ? '💀 CELL DEAD' : '🔵 CELL ALIVE'}
+        </div>
+        <div className="metric-label">{isDead ? 'Pitch Black' : 'Natural Envelope'}</div>
+      </div>
+
+      <div className="metric-divider" />
+
       {/* DSBs & GamGFP */}
       <div className="metric">
         <div className="metric-value" style={{ color: '#ef4444' }}>{dsbCount}</div>
@@ -107,4 +122,3 @@ export default function MetricsBar({ simState }) {
     </div>
   );
 }
-

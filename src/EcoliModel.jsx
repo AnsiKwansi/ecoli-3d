@@ -126,11 +126,21 @@ export default function EcoliModel({ simState, onSelectPart, selectedPartId }) {
     return list;
   }, []);
 
-  // Cell viability affects membrane opacity
+  // Cell viability model: Default Natural Color (#60a5fa Capsule) vs Black = Dead (#09090b Pitch Black Envelope)
   const viability = simState?.cellViability ?? 100;
-  const isDead = simState?.phase === 'CELL_DEATH';
-  const membraneOpacity = isDead ? 0.05 : 0.15 + (viability / 100) * 0.05;
-  const cellColor = isDead ? '#555' : getColor('capsule');
+  const isDead = simState?.phase === 'CELL_DEATH' || viability <= 15;
+  
+  let capsuleColor = getColor('capsule'); // #60a5fa Default Natural Translucent Blue-Cyan
+  let wallColor = getColor('cell_wall'); // #bef264 Lime Green Peptidoglycan
+  let membraneColor = getColor('plasma_membrane'); // #fb923c Phospholipid Bilayer
+  let capsuleOpacity = 0.25;
+
+  if (isDead) {
+    capsuleColor = '#09090b'; // Pitch Black Dead Lysed Cell Envelope
+    wallColor = '#18181b';
+    membraneColor = '#09090b';
+    capsuleOpacity = 0.9;
+  }
 
   const getLabel = (id, labelPos, targetPos) => {
     const part = partsData.find(p => p.id === id);
@@ -160,26 +170,51 @@ export default function EcoliModel({ simState, onSelectPart, selectedPartId }) {
   return (
     <group ref={groupRef}>
       <group>
-        {/* Cell Envelopes */}
+        {/* Outer Capsule Envelope — Natural Blue-Cyan (#60a5fa) Default, Pitch Black (#09090b) Dead */}
         <mesh scale={1.15}>
           <capsuleGeometry args={geomArgs} />
-          <meshStandardMaterial color={cellColor} transparent opacity={membraneOpacity} roughness={0.9} side={THREE.DoubleSide} clippingPlanes={clipPlanes} />
+          <meshStandardMaterial
+            color={capsuleColor}
+            transparent
+            opacity={capsuleOpacity}
+            roughness={0.5}
+            side={THREE.DoubleSide}
+            clippingPlanes={clipPlanes}
+          />
           {getLabel('capsule', [0, 3.5, 1.5], [0, 2, 1.15])}
         </mesh>
+        
+        {/* Cell Wall Layer */}
         <mesh scale={1.08}>
           <capsuleGeometry args={geomArgs} />
-          <meshStandardMaterial color={isDead ? '#444' : getColor('cell_wall')} transparent opacity={isDead ? 0.1 : 0.3} roughness={1} side={THREE.DoubleSide} clippingPlanes={clipPlanes} />
+          <meshStandardMaterial
+            color={wallColor}
+            transparent
+            opacity={isDead ? 0.8 : 0.35}
+            roughness={0.8}
+            side={THREE.DoubleSide}
+            clippingPlanes={clipPlanes}
+          />
         </mesh>
+
+        {/* Inner Plasma Membrane */}
         <mesh scale={1.02}>
           <capsuleGeometry args={geomArgs} />
-          <meshStandardMaterial color={isDead ? '#333' : getColor('plasma_membrane')} transparent opacity={isDead ? 0.15 : 0.5} roughness={0.6} side={THREE.DoubleSide} clippingPlanes={clipPlanes} />
+          <meshStandardMaterial
+            color={membraneColor}
+            transparent
+            opacity={isDead ? 0.9 : 0.5}
+            roughness={0.6}
+            side={THREE.DoubleSide}
+            clippingPlanes={clipPlanes}
+          />
         </mesh>
 
         {/* Nucleoid DNA */}
         <group>
           <mesh>
             <tubeGeometry args={[nucleoidCurve, 400, 0.02, 6, false]} />
-            <meshStandardMaterial color={isDead ? '#666' : getColor('nucleoid')} roughness={0.4} />
+            <meshStandardMaterial color={isDead ? '#27272a' : getColor('nucleoid')} roughness={0.4} />
           </mesh>
           {getLabel('nucleoid', [1.8, 0.5, 0.5], [0.2, 0.2, 0.4])}
         </group>
@@ -322,18 +357,18 @@ export default function EcoliModel({ simState, onSelectPart, selectedPartId }) {
         {/* Instanced Ribosomes */}
         <instancedMesh ref={ribosomeMeshRef} args={[null, null, ribosomeCount]}>
           <sphereGeometry args={[0.03, 8, 8]} />
-          <meshStandardMaterial color={getColor('ribosomes')} roughness={0.9} />
+          <meshStandardMaterial color={isDead ? '#3f3f46' : getColor('ribosomes')} roughness={0.9} />
         </instancedMesh>
 
         {/* Supercoiled Plasmids */}
         <group>
           <mesh position={[-0.8, 1.2, 0]} rotation={[Math.PI / 4, Math.PI / 4, 0]}>
             <tubeGeometry args={[reporterPlasmid, 60, 0.015, 6, false]} />
-            <meshStandardMaterial color="#ef4444" emissive="#ef4444" emissiveIntensity={0.3} />
+            <meshStandardMaterial color={isDead ? '#52525b' : '#ef4444'} emissive={isDead ? '#000000' : '#ef4444'} emissiveIntensity={isDead ? 0 : 0.3} />
           </mesh>
           <mesh position={[-0.5, 1.6, -0.3]} rotation={[Math.PI / 6, -Math.PI / 3, 0]}>
             <tubeGeometry args={[fPlasmid, 60, 0.02, 6, false]} />
-            <meshStandardMaterial color={getColor('plasmids')} />
+            <meshStandardMaterial color={isDead ? '#3f3f46' : getColor('plasmids')} />
           </mesh>
           {getLabel('plasmids', [-2, 1.8, 0.5], [-0.65, 1.4, -0.15])}
         </group>
@@ -343,7 +378,7 @@ export default function EcoliModel({ simState, onSelectPart, selectedPartId }) {
           {piliList.map((p, i) => (
             <mesh key={`pili-${i}`} position={p.pos} rotation={p.rot}>
               <cylinderGeometry args={[0.006, 0.006, 0.2, 5]} />
-              <meshStandardMaterial color={getColor('pili')} roughness={0.9} clippingPlanes={clipPlanes} />
+              <meshStandardMaterial color={isDead ? '#27272a' : getColor('pili')} roughness={0.9} clippingPlanes={clipPlanes} />
             </mesh>
           ))}
         </group>
@@ -353,7 +388,7 @@ export default function EcoliModel({ simState, onSelectPart, selectedPartId }) {
           {flagellaCurves.map((c, i) => (
             <mesh key={`flag-${i}`}>
               <tubeGeometry args={[c, 60, 0.05, 8, false]} />
-              <meshStandardMaterial color={getColor('flagella')} roughness={0.8} />
+              <meshStandardMaterial color={isDead ? '#18181b' : getColor('flagella')} roughness={0.8} />
             </mesh>
           ))}
           {getLabel('flagella', [1, -5, 1], [0, -3.4, 0.5])}

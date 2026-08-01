@@ -6,6 +6,7 @@
  *  - NER (Nucleotide Excision Repair): Thymine dimers repaired by UvrABC
  *  - BER (Base Excision Repair): Oxidative damage repaired by DNA Glycosylase
  *  - HR / SOS (Homologous Recombination): DSBs repaired by RecBCD/RecA with GamGFP foci tracking
+ *  - Physical Environmental Stress: Thermal Heat Shock, Acidification, Hyperosmotic shock
  * 
  * States: IDLE → IRRADIATED → SOS_ACTIVE → REPAIRING → RESOLVED | CELL_DEATH
  */
@@ -20,15 +21,20 @@ export const SIM_STATES = {
 };
 
 export const TOXINS = [
-  { id: 'uv', name: 'UV Radiation', color: '#38bdf8', dsbMultiplier: 1.0, dimerMultiplier: 2.0, oxMultiplier: 0.2 },
-  { id: 'mitomycin_c', name: 'Mitomycin C', color: '#ef4444', dsbMultiplier: 1.6, dimerMultiplier: 0.0, oxMultiplier: 0.1 },
-  { id: 'ciprofloxacin', name: 'Ciprofloxacin', color: '#f59e0b', dsbMultiplier: 1.4, dimerMultiplier: 0.0, oxMultiplier: 0.1 },
-  { id: 'h2o2', name: 'H₂O₂ (Oxidative)', color: '#eab308', dsbMultiplier: 0.5, dimerMultiplier: 0.0, oxMultiplier: 2.5 },
+  { id: 'uv', name: 'UV Radiation', color: '#38bdf8', dsbMultiplier: 1.0, dimerMultiplier: 2.0, oxMultiplier: 0.2, category: 'Radiation' },
+  { id: 'mitomycin_c', name: 'Mitomycin C', color: '#ef4444', dsbMultiplier: 1.6, dimerMultiplier: 0.0, oxMultiplier: 0.1, category: 'Chemical Toxin' },
+  { id: 'ciprofloxacin', name: 'Ciprofloxacin', color: '#f59e0b', dsbMultiplier: 1.4, dimerMultiplier: 0.0, oxMultiplier: 0.1, category: 'Antibiotic' },
+  { id: 'h2o2', name: 'H₂O₂ (Oxidative)', color: '#eab308', dsbMultiplier: 0.5, dimerMultiplier: 0.0, oxMultiplier: 2.5, category: 'ROS Stress' },
+  { id: 'heat_shock', name: 'Heat Shock (42°C)', color: '#f97316', dsbMultiplier: 0.8, dimerMultiplier: 0.0, oxMultiplier: 0.8, category: 'Thermal Stress' },
+  { id: 'acid_stress', name: 'Acid Stress (pH 4.5)', color: '#ec4899', dsbMultiplier: 0.6, dimerMultiplier: 0.0, oxMultiplier: 1.0, category: 'pH Stress' },
+  { id: 'osmotic_shock', name: 'Osmotic Shock (NaCl)', color: '#06b6d4', dsbMultiplier: 0.4, dimerMultiplier: 0.0, oxMultiplier: 0.5, category: 'Osmolality' },
 ];
 
 export const initialSimState = {
   phase: SIM_STATES.IDLE,
   uvDose: 30,               // J/m² (slider value)
+  temperature: 37,          // °C
+  phLevel: 7.0,             // pH
   selectedToxin: TOXINS[0],
   
   // DSB / HR Pathway
@@ -72,6 +78,12 @@ export function simReducer(state, action) {
   switch (action.type) {
     case 'SET_UV_DOSE':
       return { ...state, uvDose: action.payload };
+
+    case 'SET_TEMPERATURE':
+      return { ...state, temperature: action.payload };
+
+    case 'SET_PH_LEVEL':
+      return { ...state, phLevel: action.payload };
 
     case 'SET_TOXIN':
       return { ...state, selectedToxin: action.payload };
@@ -286,4 +298,3 @@ export function simReducer(state, action) {
       return state;
   }
 }
-
