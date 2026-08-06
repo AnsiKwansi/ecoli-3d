@@ -33,9 +33,34 @@ export const TOXINS = [
 export const initialSimState = {
   phase: SIM_STATES.IDLE,
   uvDose: 30,               // J/m² (slider value)
-  temperature: 37,          // °C
-  phLevel: 7.0,             // pH
+  // Physical Environmental Factors
+  temperature: 37,          // °C (30 to 45)
+  phLevel: 7.0,             // pH (4.0 to 8.5)
+  osmolality: 0.15,         // M NaCl (0 to 1.0)
   selectedToxin: TOXINS[0],
+
+  // Nutrient & Metabolic Environment
+  glucoseConcentration: 1.0,// g/L (0.0 to 2.0)
+  carbonSource: 'glucose',  // 'glucose' | 'lactose' | 'glycerol'
+  aminoAcidStarvation: false,// boolean (triggers (p)ppGpp stringent response)
+
+  // Master Transcriptional Regulatory Network (TRN) Concentrations (0-100%)
+  cAMPLevel: 10,            // Low when glucose high
+  ppgppLevel: 5,            // Low when nutrients abundant
+  sigma32Level: 5,          // Heat shock regulator (high at T > 37°C)
+  sigmaSLevel: 10,          // General stress / stationary phase
+  gadELevel: 5,             // Acid resistance regulator (high at pH < 6.0)
+  oxyRLevel: 5,             // Oxidative stress regulator (high with ROS)
+
+  // Active Promoter Induction Dynamics (% max rate)
+  promoters: {
+    PlacZ: 2,               // Lac operon (cAMP-CRP + Lactose induced)
+    PgroE: 5,               // Heat shock chaperones (sigma32 induced)
+    PgadA: 5,               // Acid resistance (GadE induced)
+    PkatG: 5,               // Catalase/ROS defense (OxyR induced)
+    PrelA: 5,               // Stringent response ((p)ppGpp induced)
+    PlexA: 10,              // LexA SOS regulon
+  },
   
   // DSB / HR Pathway
   dsbCount: 0,
@@ -61,6 +86,8 @@ export const initialSimState = {
   sosLevel: 0,              // 0–100%
   cellViability: 100,       // 100% = healthy, 0% = dead
   mutationCount: 0,         // Number of genetic mutations acquired
+  mutationRate: 1.2e-6,     // Current cellular mutation rate per bp per generation
+  appliedAntiEvoDrugs: [],  // Active anti-evolutionary drug adjuvants
   elapsedTime: 0,           // simulated seconds
   timeScale: 1,
   uvFlashActive: false,
@@ -85,11 +112,34 @@ export function simReducer(state, action) {
     case 'SET_PH_LEVEL':
       return { ...state, phLevel: action.payload };
 
+    case 'SET_OSMOLALITY':
+      return { ...state, osmolality: action.payload };
+
+    case 'SET_GLUCOSE':
+      return { ...state, glucoseConcentration: action.payload };
+
+    case 'SET_CARBON_SOURCE':
+      return { ...state, carbonSource: action.payload };
+
+    case 'SET_AMINO_ACID_STARVATION':
+      return { ...state, aminoAcidStarvation: action.payload };
+
     case 'SET_TOXIN':
       return { ...state, selectedToxin: action.payload };
 
     case 'SET_TIME_SCALE':
       return { ...state, timeScale: action.payload };
+
+    case 'APPLY_ANTI_EVOLUTIONARY_DRUG': {
+      const existing = state.appliedAntiEvoDrugs.filter(d => d.id !== action.payload.id);
+      const updated = [...existing, action.payload];
+      return { ...state, appliedAntiEvoDrugs: updated };
+    }
+
+    case 'REMOVE_ANTI_EVOLUTIONARY_DRUG': {
+      const updated = state.appliedAntiEvoDrugs.filter(d => d.id !== action.payload);
+      return { ...state, appliedAntiEvoDrugs: updated };
+    }
 
     case 'IRRADIATE': {
       const dose = state.uvDose;
@@ -279,14 +329,32 @@ export function simReducer(state, action) {
       }
 
       const mutationCount = dsbSites.filter(d => d.state === 'MUTATED').length;
+      
+      // Calculate dynamic mutation rate based on SOS & stress level
+      let baseMutRate = 1.0e-10 * Math.pow(10, (sosLevel / 100) * 3.5);
+      const activeDrugs = state.appliedAntiEvoDrugs || [];
+      let totalSuppressionPct = 0;
+      activeDrugs.forEach(d => {
+        totalSuppressionPct += (d.suppression || 50);
+      });
+      totalSuppressionPct = Math.min(95, totalSuppressionPct);
+      const mutationRate = baseMutRate * (1 - totalSuppressionPct / 100);
+
+      const trnState = computeTRNState({
+        ...state,
+        sosLevel,
+        cellViability,
+        oxCount
+      });
 
       return {
         ...state,
+        ...trnState,
         phase,
         dsbSites, dsbCount, gamgfpBound, recaActive,
         dimerSites, dimerCount, uvrabcBound,
         oxDamageSites, oxCount, glycosylaseBound,
-        lexaLevel, sosLevel, cellViability, mutationCount,
+        lexaLevel, sosLevel, cellViability, mutationCount, mutationRate,
         elapsedTime: elapsed,
       };
     }
@@ -295,6 +363,85 @@ export function simReducer(state, action) {
       return { ...initialSimState };
 
     default:
-      return state;
+      return {
+        ...state,
+        ...computeTRNState(state)
+      };
   }
+}
+
+/**
+ * Computes real-time Transcriptional Regulatory Network (TRN) master regulator levels
+ * and promoter activity percentages based on environmental, nutrient, and stress parameters.
+ */
+export function computeTRNState(state) {
+  const {
+    glucoseConcentration = 1.0,
+    carbonSource = 'glucose',
+    aminoAcidStarvation = false,
+    temperature = 37,
+    phLevel = 7.0,
+    selectedToxin = { id: 'uv' },
+    oxCount = 0,
+    sosLevel = 0,
+    cellViability = 100
+  } = state;
+
+  // 1. cAMP Level (Catabolite Repression): Inversely related to glucose + carbon source
+  const cAMPLevel = Math.round(
+    Math.min(100, Math.max(5, (1.0 - glucoseConcentration / 2.0) * 80 + (carbonSource === 'lactose' ? 15 : (carbonSource === 'glycerol' ? 10 : 0))))
+  );
+
+  // 2. (p)ppGpp Level (Stringent Response): High during amino acid starvation or glucose depletion
+  const ppgppLevel = Math.round(
+    aminoAcidStarvation ? 95 : Math.min(100, Math.max(5, (1.0 - glucoseConcentration / 2.0) * 65))
+  );
+
+  // 3. Sigma 32 (RpoH - Heat Shock): Elevated when T > 37°C
+  const sigma32Level = Math.round(
+    Math.min(100, Math.max(5, (temperature - 30) * 6.6))
+  );
+
+  // 4. GadE (Acid Stress): Activated when pH < 6.5
+  const gadELevel = Math.round(
+    Math.min(100, Math.max(5, (7.0 - phLevel) * 30))
+  );
+
+  // 5. OxyR / SoxRS (ROS Oxidative Defense): High under H2O2 toxin or ox damage
+  const isH2O2 = selectedToxin?.id === 'h2o2';
+  const oxyRLevel = Math.round(
+    Math.min(100, Math.max(5, (isH2O2 ? 80 : 5) + oxCount * 8))
+  );
+
+  // 6. Sigma S (RpoS - General Stress & Stationary Phase): Composite stress integration
+  const sigmaSLevel = Math.round(
+    Math.min(100, Math.max(5, ppgppLevel * 0.35 + gadELevel * 0.25 + (100 - cellViability) * 0.4))
+  );
+
+  // Promoter Activity Rates (% max induction)
+  const PlacZ = Math.round(
+    Math.min(100, (cAMPLevel * 0.85) * (carbonSource === 'lactose' ? 1.2 : (carbonSource === 'glycerol' ? 0.3 : 0.05)))
+  );
+  const PgroE = Math.round(Math.min(100, sigma32Level * 0.95));
+  const PgadA = Math.round(Math.min(100, gadELevel * 0.9));
+  const PkatG = Math.round(Math.min(100, oxyRLevel * 0.9));
+  const PrelA = Math.round(Math.min(100, ppgppLevel * 0.95));
+  const PlexA = Math.round(Math.min(100, sosLevel * 0.95 + 5));
+
+  return {
+    cAMPLevel,
+    ppgppLevel,
+    sigma32Level,
+    sigmaSLevel,
+    gadELevel,
+    oxyRLevel,
+    promoters: {
+      PlacZ,
+      PgroE,
+      PgadA,
+      PkatG,
+      PrelA,
+      PlexA,
+    }
+  };
 }

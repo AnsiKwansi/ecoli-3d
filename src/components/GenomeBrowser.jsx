@@ -12,6 +12,7 @@ import { REPLICON_INFO, PATHWAY_CATEGORIES, GENE_LOCI, generateFastaSequence } f
 export default function GenomeBrowser({ activeExpressionData, onSelectGene, selectedGene }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
+  const [selectedRegulon, setSelectedRegulon] = useState('ALL'); // 'ALL' | 'cAMP' | 'ppGpp' | 'sigma32' | 'gad' | 'oxyR' | 'sos'
   const [zoomLevel, setZoomLevel] = useState(1); // 1x to 50x
   const [centerBp, setCenterBp] = useState(2320826); // Default chromosome mid-point
   const [jumpInputBp, setJumpInputBp] = useState('');
@@ -23,6 +24,16 @@ export default function GenomeBrowser({ activeExpressionData, onSelectGene, sele
       setCenterBp(Math.round((selectedGene.start + selectedGene.end) / 2));
     }
   }, [selectedGene]);
+
+  // Environmental Regulon Target Gene Sets
+  const REGULON_TARGETS = {
+    cAMP: ['lacZ', 'lacY', 'lacA', 'crp', 'malE', 'thrA'],
+    ppGpp: ['relA', 'spoT', 'rpoS', 'dps', 'thrA', 'thrL'],
+    sigma32: ['rpoH', 'dnaK', 'dnaJ', 'ibpA', 'ibpB', 'groEL', 'groES', 'clpB'],
+    gad: ['gadA', 'gadB', 'gadC', 'adiA'],
+    oxyR: ['oxyR', 'katG', 'ahpC', 'soxS', 'fpg', 'sodA'],
+    sos: ['recA', 'lexA', 'dinB', 'sulA', 'uvrA', 'uvrB', 'uvrC', 'umuD', 'umuC'],
+  };
 
   // Expression lookup map
   const expressionMap = useMemo(() => {
@@ -50,6 +61,12 @@ export default function GenomeBrowser({ activeExpressionData, onSelectGene, sele
       const matchesCategory = selectedCategory === 'ALL' || gene.pathway === selectedCategory;
       if (!matchesCategory) return false;
 
+      if (selectedRegulon !== 'ALL') {
+        const targetList = REGULON_TARGETS[selectedRegulon] || [];
+        const isRegulonGene = targetList.includes(gene.name.toLowerCase());
+        if (!isRegulonGene) return false;
+      }
+
       if (term) {
         return (
           gene.name.toLowerCase().includes(term) ||
@@ -66,7 +83,7 @@ export default function GenomeBrowser({ activeExpressionData, onSelectGene, sele
       
       return true;
     });
-  }, [searchTerm, selectedCategory, zoomLevel, visibleWindowBp]);
+  }, [searchTerm, selectedCategory, selectedRegulon, zoomLevel, visibleWindowBp]);
 
   // Group visible genes by pathway category
   const groupedGenesByPathway = useMemo(() => {
@@ -193,6 +210,33 @@ export default function GenomeBrowser({ activeExpressionData, onSelectGene, sele
         <button className="quick-jump-btn" onClick={() => setCenterBp(2320826)}>2.32 Mb (ter)</button>
         <button className="quick-jump-btn" onClick={() => setCenterBp(3500000)}>3.5 Mb (gadAB)</button>
         <button className="quick-jump-btn" onClick={() => setCenterBp(4243000)}>4.24 Mb (lexA / uvrA)</button>
+      </div>
+
+      {/* Environmental Stress Regulon Filters */}
+      <div className="quick-jump-bar" style={{ marginTop: '0.4rem', background: 'var(--card-bg)' }}>
+        <span className="jump-label" style={{ color: '#0ea5e9', fontWeight: 800 }}>🧪 Environmental Regulon Filter:</span>
+        {[
+          { id: 'ALL', label: 'All Loci' },
+          { id: 'cAMP', label: '🍬 cAMP-CRP (Catabolite)' },
+          { id: 'ppGpp', label: '🥀 (p)ppGpp (Stringent)' },
+          { id: 'sigma32', label: '🔥 σ³² (Heat Shock)' },
+          { id: 'gad', label: '🧪 GadE (Acid)' },
+          { id: 'oxyR', label: '🟡 OxyR (ROS)' },
+          { id: 'sos', label: '⚡ SOS DDR (LexA)' },
+        ].map((reg) => (
+          <button
+            key={reg.id}
+            className={`quick-jump-btn ${selectedRegulon === reg.id ? 'active' : ''}`}
+            style={{
+              background: selectedRegulon === reg.id ? 'var(--accent)' : undefined,
+              color: selectedRegulon === reg.id ? '#ffffff' : undefined,
+              fontWeight: selectedRegulon === reg.id ? 800 : 600,
+            }}
+            onClick={() => setSelectedRegulon(reg.id)}
+          >
+            {reg.label}
+          </button>
+        ))}
       </div>
 
       {/* Main Dual Grid: Left 360° Circular Genome, Right Categorized Linear Replicon Track */}

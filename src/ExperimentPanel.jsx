@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TOXINS } from './simulation/SimulationEngine';
+import { EnvironmentalControls } from './components/EnvironmentalControls';
+import { PromoterKineticMonitor } from './components/PromoterKineticMonitor';
 
 export default function ExperimentPanel({ simState, dispatch }) {
+  const [activeTab, setActiveTab] = useState('factors'); // 'factors' | 'trn' | 'ddr'
   const isRunning = simState.phase !== 'IDLE' && simState.phase !== 'RESOLVED' && simState.phase !== 'CELL_DEATH';
   const isDead = simState.phase === 'CELL_DEATH' || simState.cellViability <= 20;
 
@@ -11,8 +14,30 @@ export default function ExperimentPanel({ simState, dispatch }) {
   return (
     <div className="experiment-panel">
       <div className="panel-header">
-        <h2>In-Vivo Controls</h2>
-        <div className="panel-subtitle">In-Vivo Cellular Experiment</div>
+        <h2>Environmental & Gene Regulation</h2>
+        <div className="panel-subtitle">Dr. Chandan Shee Lab — In-Vivo Experiment</div>
+      </div>
+
+      {/* Tab Switcher */}
+      <div className="exp-tabs-container">
+        <button
+          onClick={() => setActiveTab('factors')}
+          className={`exp-tab-btn ${activeTab === 'factors' ? 'active' : ''}`}
+        >
+          🧪 Nutrients & Stress
+        </button>
+        <button
+          onClick={() => setActiveTab('trn')}
+          className={`exp-tab-btn ${activeTab === 'trn' ? 'active' : ''}`}
+        >
+          📊 TRN Promoters
+        </button>
+        <button
+          onClick={() => setActiveTab('ddr')}
+          className={`exp-tab-btn ${activeTab === 'ddr' ? 'active' : ''}`}
+        >
+          🧬 DNA Damage
+        </button>
       </div>
 
       {/* Live / Dead Cell Status Indicator Pill */}
@@ -25,78 +50,90 @@ export default function ExperimentPanel({ simState, dispatch }) {
         }}
       >
         <span className="status-dot" style={{ backgroundColor: isDead ? '#ef4444' : '#60a5fa' }}></span>
-        <span>{isDead ? '💀 DEAD CELL (Pitch Black Envelope)' : '🔵 ALIVE CELL (Default Capsule Envelope)'}</span>
+        <span>{isDead ? '💀 DEAD CELL (Enveloped Envelope)' : '🔵 ALIVE CELL (Dynamic TRN Active)'}</span>
       </div>
 
-      {/* UV Exposure Control */}
-      <div className="control-group">
-        <label>
-          <span className="control-label">UV Irradiation Dose</span>
-          <span className="control-value">{simState.uvDose} J/m²</span>
-        </label>
-        <input
-          type="range"
-          min="5"
-          max="100"
-          step="5"
-          value={simState.uvDose}
-          onChange={(e) => dispatch({ type: 'SET_UV_DOSE', payload: Number(e.target.value) })}
-          disabled={isRunning}
-          className="slider uv-slider"
-        />
-        <div className="slider-labels">
-          <span>Low dose</span>
-          <span>High dose</span>
-        </div>
-      </div>
+      {activeTab === 'factors' && (
+        <EnvironmentalControls state={simState} dispatch={dispatch} />
+      )}
 
-      {/* Category 1: DNA Damage & Chemical Stressors */}
-      <div className="control-group">
-        <label className="control-label">
-          <span>🧬 DNA Damage & Toxins</span>
-        </label>
-        <div className="toxin-grid">
-          {chemicalToxins.map((toxin) => (
-            <button
-              key={toxin.id}
-              className={`toxin-btn ${simState.selectedToxin.id === toxin.id ? 'active' : ''}`}
-              style={{
-                '--toxin-color': toxin.color,
-                borderColor: simState.selectedToxin.id === toxin.id ? toxin.color : 'transparent',
-              }}
-              onClick={() => dispatch({ type: 'SET_TOXIN', payload: toxin })}
+      {activeTab === 'trn' && (
+        <PromoterKineticMonitor state={simState} />
+      )}
+
+      {activeTab === 'ddr' && (
+        <>
+          {/* UV Exposure Control */}
+          <div className="control-group">
+            <label>
+              <span className="control-label">UV Irradiation Dose</span>
+              <span className="control-value">{simState.uvDose} J/m²</span>
+            </label>
+            <input
+              type="range"
+              min="5"
+              max="100"
+              step="5"
+              value={simState.uvDose}
+              onChange={(e) => dispatch({ type: 'SET_UV_DOSE', payload: Number(e.target.value) })}
               disabled={isRunning}
-            >
-              <span className="toxin-dot" style={{ backgroundColor: toxin.color }}></span>
-              {toxin.name}
-            </button>
-          ))}
-        </div>
-      </div>
+              className="slider uv-slider"
+            />
+            <div className="slider-labels">
+              <span>Low dose</span>
+              <span>High dose</span>
+            </div>
+          </div>
 
-      {/* Category 2: Physical Environmental Stressors */}
-      <div className="control-group">
-        <label className="control-label">
-          <span>🌡️ Environmental Conditions</span>
-        </label>
-        <div className="toxin-grid">
-          {physicalFactors.map((factor) => (
-            <button
-              key={factor.id}
-              className={`toxin-btn ${simState.selectedToxin.id === factor.id ? 'active' : ''}`}
-              style={{
-                '--toxin-color': factor.color,
-                borderColor: simState.selectedToxin.id === factor.id ? factor.color : 'transparent',
-              }}
-              onClick={() => dispatch({ type: 'SET_TOXIN', payload: factor })}
-              disabled={isRunning}
-            >
-              <span className="toxin-dot" style={{ backgroundColor: factor.color }}></span>
-              {factor.name}
-            </button>
-          ))}
-        </div>
-      </div>
+          {/* Category 1: DNA Damage & Chemical Stressors */}
+          <div className="control-group">
+            <label className="control-label">
+              <span>🧬 DNA Damage & Toxins</span>
+            </label>
+            <div className="toxin-grid">
+              {chemicalToxins.map((toxin) => (
+                <button
+                  key={toxin.id}
+                  className={`toxin-btn ${simState.selectedToxin.id === toxin.id ? 'active' : ''}`}
+                  style={{
+                    '--toxin-color': toxin.color,
+                    borderColor: simState.selectedToxin.id === toxin.id ? toxin.color : 'transparent',
+                  }}
+                  onClick={() => dispatch({ type: 'SET_TOXIN', payload: toxin })}
+                  disabled={isRunning}
+                >
+                  <span className="toxin-dot" style={{ backgroundColor: toxin.color }}></span>
+                  {toxin.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Category 2: Physical Environmental Stressors */}
+          <div className="control-group">
+            <label className="control-label">
+              <span>🌡️ Environmental Conditions</span>
+            </label>
+            <div className="toxin-grid">
+              {physicalFactors.map((factor) => (
+                <button
+                  key={factor.id}
+                  className={`toxin-btn ${simState.selectedToxin.id === factor.id ? 'active' : ''}`}
+                  style={{
+                    '--toxin-color': factor.color,
+                    borderColor: simState.selectedToxin.id === factor.id ? factor.color : 'transparent',
+                  }}
+                  onClick={() => dispatch({ type: 'SET_TOXIN', payload: factor })}
+                  disabled={isRunning}
+                >
+                  <span className="toxin-dot" style={{ backgroundColor: factor.color }}></span>
+                  {factor.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Action Button */}
       <div className="control-group">

@@ -94,6 +94,19 @@ export default function MetricsBar({ simState }) {
 
       <div className="metric-divider" />
 
+      {/* Dynamic Mutation Rate */}
+      <div className="metric">
+        <div className="metric-value" style={{ color: '#a855f7', fontSize: '0.85rem' }}>
+          {(simState.mutationRate || 1.2e-6).toExponential(1)}
+        </div>
+        <div className="metric-label">f_mut / bp</div>
+        <div className="metric-sub">
+          {simState.appliedAntiEvoDrugs?.length > 0 ? '💊 Drug Inhibited' : 'Uninhibited'}
+        </div>
+      </div>
+
+      <div className="metric-divider" />
+
       {/* Cell Viability */}
       <div className="metric">
         <div className="metric-value" style={{ color: cellViability > 50 ? '#22c55e' : cellViability > 20 ? '#f59e0b' : '#ef4444' }}>

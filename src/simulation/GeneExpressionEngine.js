@@ -92,6 +92,34 @@ export const ENVIRONMENTAL_CONDITIONS = [
     description: 'Causes rapid cell plasmolysis and loss of turgor pressure. Activates EnvZ/OmpR two-component signal transduction and proP/otsAB osmoprotectants.',
     primaryRegulon: 'EnvZ / OmpR / RpoS Regulons',
     affectedPathways: ['OSMOTIC_STRESS']
+  },
+  {
+    id: 'carbon_shift',
+    name: 'Carbon Shift (Glucose → Lactose)',
+    category: 'Metabolic / Catabolite',
+    icon: '🍬',
+    color: '#f59e0b',
+    defaultIntensity: 0.2,
+    unit: 'g/L Glucose',
+    min: 0.0,
+    max: 2.0,
+    description: 'Glucose depletion causes adenylyl cyclase activation, producing cAMP. The cAMP-CRP complex binds Lac promoter operator sites, driving transcription of the lacZYA operon.',
+    primaryRegulon: 'cAMP-CRP Catabolite Regulon',
+    affectedPathways: ['METABOLISM_ENZYMES']
+  },
+  {
+    id: 'amino_acid_starvation',
+    name: 'Amino Acid Starvation (Stringent)',
+    category: 'Nutrient Starvation',
+    icon: '🥀',
+    color: '#be123c',
+    defaultIntensity: 80,
+    unit: '% Starved',
+    min: 10,
+    max: 100,
+    description: 'Uncharged tRNAs entering ribosome A-sites activate RelA synthase, producing (p)ppGpp alarmones. Reconfigures RNA polymerase to upregulate amino acid biosynthesis and rpoS.',
+    primaryRegulon: '(p)ppGpp / RelA Stringent Regulon',
+    affectedPathways: ['METABOLISM_ENZYMES', 'REPLICATION_TRANSCRIPTION']
   }
 ];
 
@@ -184,6 +212,27 @@ export function calculateGeneExpressions(conditionId, intensity) {
           else if (gene.name === 'otsA' || gene.name === 'otsB') foldChange = 22.0 * scaling;
           else foldChange = 12.0 * scaling;
           mechanism = 'EnvZ/OmpR hyperosmotic signal transduction';
+          regulation = 'UPREGULATED';
+        }
+        break;
+
+      case 'carbon_shift':
+        if (['lacZ', 'lacY', 'lacA', 'crp', 'malE', 'thrA'].includes(gene.name)) {
+          const campScale = Math.max(0.5, (2.0 - intensity) * 1.5 + 0.5);
+          if (gene.name === 'lacZ' || gene.name === 'lacY') foldChange = 55.0 * campScale;
+          else if (gene.name === 'crp') foldChange = 18.0 * campScale;
+          else foldChange = 14.0 * campScale;
+          mechanism = 'cAMP-CRP catabolite derepression & lactose induction';
+          regulation = 'UPREGULATED';
+        }
+        break;
+
+      case 'amino_acid_starvation':
+        if (['relA', 'spoT', 'rpoS', 'dps', 'thrA', 'thrL'].includes(gene.name)) {
+          if (gene.name === 'relA' || gene.name === 'spoT') foldChange = 38.0 * scaling;
+          else if (gene.name === 'rpoS' || gene.name === 'dps') foldChange = 26.0 * scaling;
+          else foldChange = 18.0 * scaling;
+          mechanism = '(p)ppGpp stringent response alarmone synthesis';
           regulation = 'UPREGULATED';
         }
         break;

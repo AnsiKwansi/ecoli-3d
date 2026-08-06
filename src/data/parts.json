@@ -3,22 +3,36 @@
     "id": "nucleoid",
     "name": "Nucleoid (Chromosomal DNA)",
     "color": "#fef08a",
-    "description": "The irregularly shaped region within the cell where the ~4.6 million base pair circular chromosome is localized. UV radiation causes thymine dimers and double-strand breaks along this DNA."
+    "description": "The irregularly shaped region within the cell where the ~4.64 million base pair circular chromosome is localized. UV radiation, ROS, and environmental stressors cause thymine dimers and double-strand breaks along this DNA.",
+    "pubId": "wimberly_natcomm_2013",
+    "reference": {
+      "pubId": "wimberly_natcomm_2013",
+      "title": "Wimberly, Shee et al. (2013). R-loops and nicks initiate DNA breakage and genome instability in non-growing Escherichia coli. Nature Communications, 4, 2115.",
+      "url": "https://doi.org/10.1038/ncomms3115"
+    }
   },
   {
     "id": "ribosomes",
     "name": "Ribosomes",
     "color": "#a855f7",
-    "description": "Complex molecular machines (70S in bacteria) that translate mRNA into proteins. During the SOS response, ribosomes translate upregulated repair genes."
+    "description": "Complex molecular machines (70S in bacteria) that translate mRNA into proteins. During the SOS response and (p)ppGpp stringent response, ribosomes translate upregulated repair genes.",
+    "pubId": "mamun_science_2012",
+    "reference": {
+      "pubId": "mamun_science_2012",
+      "title": "Al Mamun, Shee et al. (2012). Identity and function of a large gene network underlying mutagenic repair of DNA breaks. Science, 338(6112), 1344-1348.",
+      "url": "https://doi.org/10.1126/science.1226683"
+    }
   },
   {
     "id": "gamgfp",
     "name": "GamGFP (DSB Sensor)",
     "color": "#22c55e",
-    "description": "A fusion of bacteriophage Mu Gam protein and Green Fluorescent Protein. Gam binds to DNA double-strand break ends, forming bright green fluorescent foci that mark DSB locations in real time.",
+    "description": "A fusion of bacteriophage Mu Gam protein and Green Fluorescent Protein. Gam binds to DNA double-strand break ends with high affinity, forming bright green fluorescent foci that mark DSB locations in real time.",
+    "pubId": "shee_elife_2013",
     "reference": {
-      "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., Magnan, D., Rosenberg, S. M., Frisch, R. L., & Hastings, P. J. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
-      "url": "https://elifesciences.org/articles/1222"
+      "pubId": "shee_elife_2013",
+      "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., ... & Rosenberg, S. M. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
+      "url": "https://doi.org/10.7554/eLife.01222"
     }
   },
   {
@@ -26,25 +40,35 @@
     "name": "RecA Filaments",
     "color": "#fb923c",
     "description": "RecA protein polymerizes on single-stranded DNA at DSB sites, forming nucleoprotein filaments. These filaments catalyze homologous recombination for repair and also trigger the SOS response by stimulating LexA auto-cleavage.",
+    "pubId": "mamun_science_2012",
     "reference": {
-      "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., Magnan, D., Rosenberg, S. M., Frisch, R. L., & Hastings, P. J. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
-      "url": "https://elifesciences.org/articles/1222"
+      "pubId": "mamun_science_2012",
+      "title": "Al Mamun, Shee et al. (2012). Identity and function of a large gene network underlying mutagenic repair of DNA breaks. Science, 338(6112), 1344-1348.",
+      "url": "https://doi.org/10.1126/science.1226683"
     }
   },
   {
     "id": "lexa",
     "name": "LexA Repressor",
     "color": "#94a3b8",
-    "description": "LexA is a transcriptional repressor that keeps SOS response genes silenced under normal conditions. When RecA filaments form at DSBs, they stimulate LexA to auto-cleavage, derepressing ~40 SOS genes including DNA repair enzymes."
+    "description": "LexA is a transcriptional repressor that keeps SOS response genes silenced under normal conditions. When RecA filaments form at DSBs, they stimulate LexA to auto-cleavage, derepressing ~50 SOS genes including DNA repair enzymes.",
+    "pubId": "shee_pnas_2011",
+    "reference": {
+      "pubId": "shee_pnas_2011",
+      "title": "Shee, C., Gibson, J. L., Darrow, M. C., Gonzalez, C., & Rosenberg, S. M. (2011). Impact of a stress-inducible switch to mutagenic repair of DNA breaks on mutation in Escherichia coli. Proceedings of the National Academy of Sciences, 108(33), 13659-13664.",
+      "url": "https://doi.org/10.1073/pnas.1104680108"
+    }
   },
   {
     "id": "recbcd",
     "name": "RecBCD Enzyme",
     "color": "#d946ef",
     "description": "A bacterial helicase-nuclease that processes broken DNA ends during homologous recombination repair. GamGFP competes with RecBCD by capping DNA ends first.",
+    "pubId": "shee_elife_2013",
     "reference": {
-      "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., Magnan, D., Rosenberg, S. M., Frisch, R. L., & Hastings, P. J. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
-      "url": "https://elifesciences.org/articles/1222"
+      "pubId": "shee_elife_2013",
+      "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., ... & Rosenberg, S. M. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
+      "url": "https://doi.org/10.7554/eLife.01222"
     }
   },
   {
@@ -52,9 +76,11 @@
     "name": "Double-Strand Break (DSB)",
     "color": "#ef4444",
     "description": "A severe form of DNA damage where both strands of the double helix are severed. UV radiation and environmental toxins can induce DSBs directly or indirectly via replication fork collapse.",
+    "pubId": "shee_cell_reports_2012",
     "reference": {
-      "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., Magnan, D., Rosenberg, S. M., Frisch, R. L., & Hastings, P. J. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
-      "url": "https://elifesciences.org/articles/1222"
+      "pubId": "shee_cell_reports_2012",
+      "title": "Shee, C., Gibson, J. L., & Rosenberg, S. M. (2012). Two mechanisms produce mutation hotspots at DNA breaks in Escherichia coli. Cell Reports, 2(4), 714-721.",
+      "url": "https://doi.org/10.1016/j.celrep.2012.08.033"
     }
   },
   {
@@ -62,9 +88,11 @@
     "name": "DNA Polymerase IV (DinB)",
     "color": "#f97316",
     "description": "An error-prone DNA polymerase upregulated during the SOS response. It can bypass lesions in DNA that stall normal replication, but its low fidelity often introduces mutations (Stress-Induced Mutagenesis).",
+    "pubId": "shee_pnas_2011",
     "reference": {
+      "pubId": "shee_pnas_2011",
       "title": "Shee, C., Gibson, J. L., Darrow, M. C., Gonzalez, C., & Rosenberg, S. M. (2011). Impact of a stress-inducible switch to mutagenic repair of DNA breaks on mutation in Escherichia coli. Proceedings of the National Academy of Sciences, 108(33), 13659-13664.",
-      "url": "https://doi.org/10.1073/pnas.1107147108"
+      "url": "https://doi.org/10.1073/pnas.1104680108"
     }
   },
   {
@@ -72,9 +100,11 @@
     "name": "Genetic Mutation",
     "color": "#eab308",
     "description": "A permanent alteration in the DNA sequence. Under high stress, E. coli employs error-prone repair mechanisms (like Pol IV), increasing the mutation rate to potentially acquire traits that help it survive the stress.",
+    "pubId": "rosenberg_bioessays_2012",
     "reference": {
-      "title": "Shee, C., Gibson, J. L., Darrow, M. C., Gonzalez, C., & Rosenberg, S. M. (2011). Impact of a stress-inducible switch to mutagenic repair of DNA breaks on mutation in Escherichia coli. Proceedings of the National Academy of Sciences, 108(33), 13659-13664.",
-      "url": "https://doi.org/10.1073/pnas.1107147108"
+      "pubId": "rosenberg_bioessays_2012",
+      "title": "Rosenberg, S. M., Shee, C., Frisch, R. L., & Hastings, P. J. (2012). Stress-induced mutation via DNA breaks in Escherichia coli: a molecular mechanism with implications for evolution and medicine. Bioessays, 34(10), 885-892.",
+      "url": "https://doi.org/10.1002/bies.201200050"
     }
   },
   {
@@ -82,9 +112,11 @@
     "name": "Plasmid DNA",
     "color": "#2dd4bf",
     "description": "Small, extra-chromosomal circular DNA molecules used to express reporter constructs like GamGFP and TetR-mCherry in the Shee Lab's experimental system.",
+    "pubId": "shee_elife_2013",
     "reference": {
-      "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., Magnan, D., Rosenberg, S. M., Frisch, R. L., & Hastings, P. J. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
-      "url": "https://elifesciences.org/articles/1222"
+      "pubId": "shee_elife_2013",
+      "title": "Shee, C., Cox, B. D., Gu, F., Luengas, E. M., Joshi, M. C., Chiu, L. Y., ... & Rosenberg, S. M. (2013). Engineered proteins detect spontaneous DNA breakage in human and bacterial cells. eLife, 2, e01222.",
+      "url": "https://doi.org/10.7554/eLife.01222"
     }
   },
   {
@@ -92,9 +124,11 @@
     "name": "Thymine Dimers (UV Damage)",
     "color": "#38bdf8",
     "description": "Covalent linkages between adjacent thymine bases caused by ultraviolet (UV) radiation. Dimers distort the DNA double helix, stalling DNA replication and transcription until repaired by Nucleotide Excision Repair (NER).",
+    "pubId": "shee_pnas_2011",
     "reference": {
-      "title": "Sancar, A. (1996). Mechanisms of DNA excision repair. Science, 272(5264), 995-1001.",
-      "url": "https://doi.org/10.1126/science.272.5264.995"
+      "pubId": "shee_pnas_2011",
+      "title": "Shee et al. (2011). Impact of a stress-inducible switch to mutagenic repair of DNA breaks on mutation in Escherichia coli. PNAS, 108(33), 13659-13664.",
+      "url": "https://doi.org/10.1073/pnas.1104680108"
     }
   },
   {
@@ -102,9 +136,11 @@
     "name": "UvrABC Excinuclease Complex",
     "color": "#0ea5e9",
     "description": "The multi-subunit enzyme complex (UvrA, UvrB, UvrC) that performs Nucleotide Excision Repair (NER). UvrAB scans the DNA for bulky helix-distorting lesions like thymine dimers, and UvrC cleaves single-stranded cuts on both sides of the damage to excise the oligonucleotide.",
+    "pubId": "shee_pnas_2011",
     "reference": {
-      "title": "Sancar, A. (1996). Mechanisms of DNA excision repair. Science, 272(5264), 995-1001.",
-      "url": "https://doi.org/10.1126/science.272.5264.995"
+      "pubId": "shee_pnas_2011",
+      "title": "Shee et al. (2011). Impact of a stress-inducible switch to mutagenic repair of DNA breaks on mutation in Escherichia coli. PNAS, 108(33), 13659-13664.",
+      "url": "https://doi.org/10.1073/pnas.1104680108"
     }
   },
   {
@@ -112,9 +148,11 @@
     "name": "Oxidative DNA Damage (8-oxoG)",
     "color": "#eab308",
     "description": "Lesions such as 8-oxoguanine and apurinic sites caused by reactive oxygen species (ROS) from H₂O₂ exposure. If unrepaired, 8-oxoG mispairs with adenine during replication, leading to GC → TA transversion mutations.",
+    "pubId": "wimberly_natcomm_2013",
     "reference": {
-      "title": "David, S. S., O'Shea, V. L., & Kundu, S. (2007). Base excision repair of oxidative DNA damage. Nature, 447(7147), 941-950.",
-      "url": "https://doi.org/10.1038/nature05978"
+      "pubId": "wimberly_natcomm_2013",
+      "title": "Wimberly, Shee et al. (2013). R-loops and nicks initiate DNA breakage and genome instability in non-growing Escherichia coli. Nature Communications, 4, 2115.",
+      "url": "https://doi.org/10.1038/ncomms3115"
     }
   },
   {
@@ -122,9 +160,11 @@
     "name": "DNA Glycosylase (Fpg / MutM)",
     "color": "#facc15",
     "description": "A Base Excision Repair (BER) enzyme that recognizes and flips out oxidized bases like 8-oxoguanine, cleaving the N-glycosidic bond to initiate BER repair and restore genetic integrity.",
+    "pubId": "wimberly_natcomm_2013",
     "reference": {
-      "title": "David, S. S., O'Shea, V. L., & Kundu, S. (2007). Base excision repair of oxidative DNA damage. Nature, 447(7147), 941-950.",
-      "url": "https://doi.org/10.1038/nature05978"
+      "pubId": "wimberly_natcomm_2013",
+      "title": "Wimberly, Shee et al. (2013). R-loops and nicks initiate DNA breakage and genome instability in non-growing Escherichia coli. Nature Communications, 4, 2115.",
+      "url": "https://doi.org/10.1038/ncomms3115"
     }
   },
   {
