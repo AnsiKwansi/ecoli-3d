@@ -156,14 +156,29 @@ export default function LiveDrugKineticsChart({ selectedDrug, dosage, isApplied,
 
             {/* Live Indicator Pin */}
             {(() => {
-              const cx = 40 + (generation / 100) * 440;
-              const controlY = 130 - (generation / 100) * 100;
-              const treatedY = isApplied ? 138 : controlY;
+              const t = Math.max(0, Math.min(1, generation / 100));
+              const u = 1 - t;
+              const tt = t * t;
+              const uu = u * u;
+              const uuu = uu * u;
+              const ttt = tt * t;
+
+              // Exact Cubic Bezier X position: M 40 ... C 150, 250, 480
+              const cx = uuu * 40 + 3 * uu * t * 150 + 3 * u * tt * 250 + ttt * 480;
+
+              // Exact Control Curve Y position: M ... 130 C ... 120, 40, 30
+              const controlY = uuu * 130 + 3 * uu * t * 120 + 3 * u * tt * 40 + ttt * 30;
+
+              // Exact Treated Curve Y position: M ... 130 C ... 135, 138, 138
+              const treatedY = isApplied
+                ? uuu * 130 + 3 * uu * t * 135 + 3 * u * tt * 138 + ttt * 138
+                : controlY;
+
               return (
-                <g>
-                  <line x1={cx} y1="20" x2={cx} y2="140" stroke="#a78bfa" strokeWidth="1.5" strokeDasharray="2 2" />
-                  <circle cx={cx} cy={controlY} r="5" fill="#ef4444" stroke="#ffffff" strokeWidth="1.5" />
-                  <circle cx={cx} cy={treatedY} r="5" fill={isApplied ? "#22c55e" : "#94a3b8"} stroke="#ffffff" strokeWidth="1.5" />
+                <g key="live-indicator-pin">
+                  <line x1={cx} y1="20" x2={cx} y2="140" stroke="#a78bfa" strokeWidth="1.5" strokeDasharray="3 3" />
+                  <circle cx={cx} cy={controlY} r="5.5" fill="#ef4444" stroke="#ffffff" strokeWidth="2" />
+                  <circle cx={cx} cy={treatedY} r="5.5" fill={isApplied ? "#22c55e" : "#94a3b8"} stroke="#ffffff" strokeWidth="2" />
                 </g>
               );
             })()}
