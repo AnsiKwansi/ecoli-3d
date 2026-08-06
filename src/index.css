@@ -2162,6 +2162,196 @@ body, html, #root {
 .toxicity-card h4 { color: #60a5fa; }
 
 /* ==========================================================================
+   Live Dynamic Anti-Evolutionary Kinetics Assay Simulator Styling
+   ========================================================================== */
+.live-drug-kinetics-card {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kinetics-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--panel-border);
+  padding-bottom: 0.75rem;
+}
+
+.kinetics-title h4 {
+  margin: 0 0 4px 0;
+  font-size: 1.1rem;
+  color: #34d399;
+}
+
+.kinetics-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.kinetics-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kinetics-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--button-bg);
+  border: 1px solid var(--button-border);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.kinetics-btn.active {
+  background: #10b981;
+  border-color: #34d399;
+  color: #ffffff;
+}
+
+.speed-pills {
+  display: flex;
+  gap: 3px;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 3px;
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+}
+
+.speed-pill {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.speed-pill.active {
+  background: #8b5cf6;
+  color: #ffffff;
+}
+
+.timeline-progress-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timeline-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.timeline-track {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  position: relative;
+  overflow: visible;
+}
+
+.timeline-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #10b981);
+  border-radius: 4px;
+  transition: width 0.1s linear;
+}
+
+.timeline-head {
+  position: absolute;
+  top: -4px;
+  width: 16px;
+  height: 16px;
+  background: #ffffff;
+  border: 2px solid #8b5cf6;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.8);
+}
+
+.kinetics-chart-box {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.chart-legend-row {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.legend-tag.control { color: #fca5a5; }
+.legend-tag.treated { color: #6ee7b7; }
+
+.svg-chart-container {
+  width: 100%;
+}
+
+.kinetics-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.kinetics-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.kinetics-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kinetics-card.control { border-left: 4px solid #ef4444; }
+.kinetics-card.treated { border-left: 4px solid #94a3b8; }
+.kinetics-card.treated.active { border-left-color: #10b981; background: rgba(16, 185, 129, 0.08); }
+
+.kinetics-card-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.kinetics-stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+.kinetics-stat .lbl { color: var(--text-secondary); }
+.kinetics-stat .val { font-weight: 800; }
+
+/* ==========================================================================
    Live Real-Condition DNA Sequence Mutagenesis & Base Alignment Simulator
    ========================================================================== */
 .live-dna-simulator-card {

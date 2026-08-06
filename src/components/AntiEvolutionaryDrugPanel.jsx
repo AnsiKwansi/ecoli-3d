@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ANTI_EVOLUTIONARY_DRUGS } from '../data/anti_evolutionary_drugs_data';
+import LiveDrugKineticsChart from './LiveDrugKineticsChart';
 
 export default function AntiEvolutionaryDrugPanel({ simState, dispatch }) {
   const [selectedDrugId, setSelectedDrugId] = useState('lexa_inh_1');
@@ -13,6 +14,8 @@ export default function AntiEvolutionaryDrugPanel({ simState, dispatch }) {
   const currentSuppression = Math.round((maxSupp * dosage) / (dosage + 50));
   const effectiveMutationRate = ((simState.mutationRate || 1.2e-6) * (1 - currentSuppression / 100)).toExponential(2);
   const resistanceDelayMultiplier = Math.round((Number(selectedDrug.amrDelayFactor.replace('x', '')) * currentSuppression) / 100);
+
+  const isSelectedDrugApplied = appliedDrugs.some(d => d.id === selectedDrug.id);
 
   const toggleApplyDrug = (drug) => {
     if (appliedDrugs.some(d => d.id === drug.id)) {
@@ -137,6 +140,16 @@ export default function AntiEvolutionaryDrugPanel({ simState, dispatch }) {
               <span className="eff-subtext">Postpones resistance emergence</span>
             </div>
           </div>
+
+          {/* Real-Time Live Dynamic Kinetics Assay Simulator */}
+          <LiveDrugKineticsChart
+            selectedDrug={selectedDrug}
+            dosage={dosage}
+            isApplied={isSelectedDrugApplied}
+            currentSuppression={currentSuppression}
+            effectiveRate={effectiveMutationRate}
+            resistanceDelay={resistanceDelayMultiplier}
+          />
 
           {/* Targeted Molecular Mechanism */}
           <div className="drug-section mechanism-card">
