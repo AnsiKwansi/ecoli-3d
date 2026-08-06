@@ -204,6 +204,14 @@ export default function LiteratureLookupPanel({ initialTerm }) {
                 ))}
               </div>
 
+              {/* Plain-English 1-Paragraph Research Summary */}
+              {pub.summary && (
+                <div className="pub-summary-box">
+                  <h4>💡 Plain-English Research Summary:</h4>
+                  <p>{pub.summary}</p>
+                </div>
+              )}
+
               <div className="pub-abstract">
                 <strong>Abstract:</strong> {pub.abstract}
               </div>

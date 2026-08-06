@@ -1872,6 +1872,27 @@ body, html, #root {
   border-radius: 4px;
 }
 
+.pub-summary-box {
+  background: rgba(139, 92, 246, 0.12);
+  border-left: 3px solid #8b5cf6;
+  padding: 0.75rem;
+  border-radius: 6px;
+}
+
+.pub-summary-box h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.78rem;
+  color: #c4b5fd;
+  font-weight: 700;
+}
+
+.pub-summary-box p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: #f1f5f9;
+}
+
 .pub-abstract {
   font-size: 0.82rem;
   line-height: 1.4;

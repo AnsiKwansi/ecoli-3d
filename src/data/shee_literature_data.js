@@ -1,7 +1,7 @@
 /**
  * Dr. Chandan Shee Literature Database & Term-by-Term Dictionary Index
  * Complete collection of 20 peer-reviewed publications by Dr. Chandan Shee et al.
- * Focuses on Stress-Induced Mutagenesis (SIM), Double-Strand Breaks (DSBs), GamGFP, R-loops, and Protein Biochemistry.
+ * Includes plain-English summaries, abstracts, key takeaways, DOIs, and term dictionary.
  */
 
 export const SHEE_PUBLICATIONS = [
@@ -16,6 +16,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.7554/eLife.01222',
     url: 'https://doi.org/10.7554/eLife.01222',
     tags: ['GamGFP', 'Double-Strand Breaks', 'Fluorescent Reporter', 'In-Vivo Tracking', 'Microscopy'],
+    summary: 'This landmark study introduced GamGFP—a revolutionary imaging tool created by fusing bacteriophage Mu Gam protein to green fluorescent protein. GamGFP binds specifically to double-stranded DNA ends inside living bacterial and human cells, forming bright fluorescent spots (foci) visible under a microscope. This allowed scientists for the first time to track, quantify, and visualize spontaneous DNA double-strand breaks in single living cells in real time without destroying the cell.',
     abstract: 'Engineered green fluorescent protein fused to bacteriophage Mu Gam protein (GamGFP) binds specifically to double-stranded DNA ends. GamGFP quantification reveals spontaneous DSB frequency in living bacterial and mammalian cells with single-cell resolution.',
     keyTakeaways: [
       'Pioneered GamGFP reporter technology for quantitative in-vivo DSB tracking.',
@@ -34,6 +35,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1126/science.1226683',
     url: 'https://doi.org/10.1126/science.1226683',
     tags: ['Gene Network', 'Mutagenic Repair', 'Stress-Induced Mutagenesis', 'RecA', 'Genome Instability'],
+    summary: 'Using a genome-wide screen in E. coli, the authors mapped a massive regulatory network of 93 genes that cells use to control mutagenic DNA repair under stress. Rather than relying on a single isolated enzyme, bacteria use coordinated systems—including stress sensors, chromatin factors, and signaling pathways—to regulate when and where error-prone repair occurs. This proved that stress-induced mutation is a regulated cellular program, revealing over 90 candidate targets for anti-evolutionary therapeutics.',
     abstract: 'Genome-wide screening identified over 90 genes required for stress-induced mutagenic repair of DNA double-strand breaks in E. coli. The network spans stress sensors, signaling pathways, chromatin factors, and DNA repair enzymes.',
     keyTakeaways: [
       'Mapped a 93-gene network governing stress-induced mutagenesis in E. coli.',
@@ -52,6 +54,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1038/ncomms3115',
     url: 'https://doi.org/10.1038/ncomms3115',
     tags: ['R-loops', 'DNA Breakage', 'Genome Instability', 'Stationary Phase', 'RNA:DNA Hybrids'],
+    summary: 'This study reveals how spontaneous DNA double-strand breaks originate in non-dividing or starving bacteria. The researchers discovered that un-cleared R-loops (structures where a newly transcribed RNA strand stays bound to template DNA) and single-stranded nicks serve as major natural triggers for chromosome breakage. When processed by endonucleases, R-loops collapse into double-strand breaks that initiate stress-induced mutagenesis.',
     abstract: 'In non-dividing E. coli cells, un-cleared R-loops (RNA:DNA hybrids) and single-strand nicks serve as endogenous precursors for double-strand breaks. Processing of R-loops creates DSBs that feed into mutagenic break repair.',
     keyTakeaways: [
       'Discovered R-loops as major endogenous triggers of DNA double-strand breaks in non-dividing cells.',
@@ -70,6 +73,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1002/bies.201200050',
     url: 'https://doi.org/10.1002/bies.201200050',
     tags: ['Stress-Induced Mutagenesis', 'Evolution', 'Antibiotic Resistance', 'DNA Breaks', 'Medical Implications'],
+    summary: 'This foundational paper synthesizes the molecular mechanisms of stress-induced mutation via double-strand DNA breaks in E. coli and discusses its broad implications for medicine and evolutionary biology. The authors explain how bacteria upregulate mutagenic repair under stress to accelerate resistance evolution, providing the theoretical framework for developing anti-evolutionary drugs that inhibit pro-mutator pathways.',
     abstract: 'Synthesizes molecular mechanisms of stress-induced mutation via DNA double-strand breaks in E. coli and discusses implications for pathogen evolution, cancer cell resistance, and anti-evolutionary drug development.',
     keyTakeaways: [
       'Conceptualized stress-induced mutation as a major driver of evolvability.',
@@ -88,6 +92,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1073/pnas.1104680108',
     url: 'https://doi.org/10.1073/pnas.1104680108',
     tags: ['Stress-Induced Mutagenesis', 'DNA Repair', 'DinB / Pol IV', 'RpoS', 'Double-Strand Breaks'],
+    summary: 'This landmark paper established the molecular switch that converts high-fidelity DNA repair into error-prone mutagenic repair during stress in E. coli. Under starvation or antibiotic stress, activation of the RpoS stress sigma factor and SOS response recruits error-prone DNA Polymerase IV (DinB) to repair double-strand breaks, creating mutations that drive rapid adaptation and antibiotic resistance.',
     abstract: 'Demonstrates that double-strand break repair switches from high-fidelity repair to mutagenic repair under stress via RpoS and SOS activation, promoting error-prone DNA synthesis by Polymerase IV (DinB).',
     keyTakeaways: [
       'Identified the RpoS and SOS-dependent molecular switch to mutagenic double-strand break repair.',
@@ -106,6 +111,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1016/j.phytochem.2008.05.002',
     url: 'https://doi.org/10.1016/j.phytochem.2008.05.002',
     tags: ['Biochemistry', 'Trypsin Inhibitor', 'Plant Proteins', 'Protein Purification'],
+    summary: 'This biochemical study purified and characterized a robust Kunitz-type serine protease trypsin inhibitor from Putranjiva roxburghii plant seeds. The authors evaluated its stoichiometry, inhibition constant, and thermodynamic stability, demonstrating that the protein maintains structural integrity across wide pH and temperature ranges.',
     abstract: 'Purified and characterized a potent Kunitz-type serine protease trypsin inhibitor from Putranjiva roxburghii seeds, detailing thermal stability and stoichiometry of inhibition.',
     keyTakeaways: [
       'Isolated serine protease trypsin inhibitor from P. roxburghii.',
@@ -124,6 +130,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1016/j.celrep.2012.08.033',
     url: 'https://doi.org/10.1016/j.celrep.2012.08.033',
     tags: ['Mutation Hotspots', 'DNA Breaks', 'Frameshifts', 'DinB / Pol IV', 'Hotspot Clustering'],
+    summary: 'The authors discovered two distinct molecular mechanisms that produce localized "mutation hotspots" surrounding DNA double-strand breaks in E. coli. They showed that error-prone Polymerase IV (DinB) generates frameshift mutation clusters near repair sites, while RecA protein drives point substitution hotspots, proving that DNA breaks trigger concentrated focal genome evolution.',
     abstract: 'Discovered two distinct molecular mechanisms generating localized mutation hotspots near double-strand breaks in E. coli: DinB-dependent frameshifts and RecA-dependent base substitutions.',
     keyTakeaways: [
       'Demonstrated spatial clustering of mutations surrounding double-strand break repair sites.',
@@ -142,6 +149,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1080/14756360601046182',
     url: 'https://doi.org/10.1080/14756360601046182',
     tags: ['Enzyme Inhibition', 'Trypsin Inhibitor', 'Murraya koenigii', 'Medicinal Chemistry'],
+    summary: 'This paper reports the isolation and purification of a novel serine protease trypsin inhibitor from curry leaf (Murraya koenigii) seeds. The study characterized its kinetic inhibition profile, binding affinity, and biochemical stability, highlighting its potential application as a natural pest-resistance factor and enzyme regulator.',
     abstract: 'Isolated and biochemically evaluated a novel trypsin inhibitor from curry leaf (Murraya koenigii) seeds showing high specificity and competitive inhibition profile.',
     keyTakeaways: [
       'Discovered trypsin inhibitor in Murraya koenigii seeds.',
@@ -160,6 +168,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '',
     url: '#',
     tags: ['Protein Isolation', 'Moringa oleifera', 'Flocculation', 'Coagulation Protein'],
+    summary: 'The authors isolated a 66 kDa natural protein with potent coagulation and flocculation activity from Moringa oleifera seeds. The study characterized how this protein binds and precipitates suspended particles, offering an eco-friendly plant-based biomaterial for water purification and bioprocess clarification.',
     abstract: 'Isolated a 66 kDa plant protein from Moringa oleifera seeds exhibiting potent biomanufacturing water clarification and coagulation properties.',
     keyTakeaways: [
       'Purified 66 kDa natural coagulant protein from Moringa oleifera.',
@@ -177,6 +186,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1159/000334861',
     url: 'https://doi.org/10.1159/000334861',
     tags: ['Mutagenic Efficiency', 'Stress Response', 'DSB Repair', 'Limiting Factors', 'RpoS'],
+    summary: 'This study investigated what limits the maximum rate of stress-induced mutation in E. coli. The authors showed that mutation rates do not escalate infinitely under stress; instead, they are capped by specific rate-limiting factors, primarily the intracellular concentration of the RpoS sigma factor and RecA filament assembly rate.',
     abstract: 'Investigates the rate-limiting cellular factors controlling stress-induced mutagenesis efficiency, establishing that availability of RpoS and RecA nucleoprotein filaments cap overall mutation yield.',
     keyTakeaways: [
       'Identified cellular bottlenecks limiting maximum stress-induced mutation rate.',
@@ -195,6 +205,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1016/j.abb.2009.11.011',
     url: 'https://doi.org/10.1016/j.abb.2009.11.011',
     tags: ['X-ray Crystallography', 'Protein Structure', 'Miraculin-like', 'Murraya koenigii'],
+    summary: 'Using X-ray crystallography, the researchers solved the high-resolution 3D atomic structure of a miraculin-like protein from Murraya koenigii seeds. The crystal structure revealed a characteristic beta-trefoil fold architecture and identified surface residues involved in ligand binding and biophysical stability.',
     abstract: 'Determined high-resolution crystal structure and sequence of a miraculin-like protein from Murraya koenigii, revealing beta-trefoil fold architecture.',
     keyTakeaways: [
       'Solved atomic crystal structure of miraculin-like protein.',
@@ -213,6 +224,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1016/j.ijbiomac.2007.05.012',
     url: 'https://doi.org/10.1016/j.ijbiomac.2007.05.012',
     tags: ['Structure-Function', 'Circular Dichroism', 'Trypsin Inhibitor', 'Secondary Structure'],
+    summary: 'This spectroscopic structure-function study examined the secondary structure of the Murraya koenigii trypsin inhibitor using Circular Dichroism (CD). The authors proved that a stable core beta-sheet framework surrounded by alpha-helical regions is essential for maintaining active-site loop geometry during serine protease inhibition.',
     abstract: 'Spectroscopic structural study showing that secondary alpha-helical motifs in Murraya koenigii trypsin inhibitor stabilize the catalytic loop interface required for serine protease inhibition.',
     keyTakeaways: [
       'Mapped secondary structure elements using CD spectroscopy.',
@@ -230,6 +242,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1016/j.foodchem.2007.08.016',
     url: 'https://doi.org/10.1016/j.foodchem.2007.08.016',
     tags: ['Biochemical Stability', 'Affinity Chromatography', 'Protease Inhibitor'],
+    summary: 'The authors evaluated the storage stability, thermal resilience, and affinity chromatography performance of the Murraya koenigii trypsin inhibitor. The study established that the purified protein retains full inhibitory activity over long storage periods and varying pH levels, optimizing parameters for trypsin affinity purification matrices.',
     abstract: 'Evaluated long-term storage stability, pH range resilience, and trypsin affinity chromatography purification parameters for Murraya koenigii trypsin inhibitor.',
     keyTakeaways: [
       'Demonstrated high thermal and chemical storage stability.',
@@ -247,6 +260,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '',
     url: '#',
     tags: ['Environmental Science', 'Phytoremediation', 'Ecology', 'Mine Reclamation'],
+    summary: 'This environmental study evaluated native Indian plant species for phytoremediation and eco-restoration on metal-contaminated mine overburden sites. The authors identified stress-tolerant flora capable of stabilizing degraded soil and absorbing heavy metals, providing a sustainable framework for land reclamation.',
     abstract: 'Assessed indigenous plant species for heavy metal tolerance and eco-restoration suitability on degraded overburden dump mining sites.',
     keyTakeaways: [
       'Evaluated phytoremediation species for mine soil reclamation.',
@@ -264,6 +278,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1007/BF03263301',
     url: 'https://doi.org/10.1007/BF03263301',
     tags: ['Antimicrobial Peptide', 'Trypsin Inhibitor', 'Biotechnology', 'Lagenaria siceraria'],
+    summary: 'The study identified a dual-function bioactive peptide-like compound from bottle gourd (Lagenaria siceraria) seeds. The purified compound demonstrated both serine protease trypsin inhibition and direct antibacterial activity against pathogenic microorganisms, presenting a promising natural dual-action antimicrobial candidate.',
     abstract: 'Discovered a dual-function bioactive peptide-like compound from bottle gourd seeds displaying both microbial growth suppression and trypsin enzyme inhibition.',
     keyTakeaways: [
       'Isolated dual antimicrobial and protease inhibitory peptide.',
@@ -281,6 +296,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1107/S174430910701194X',
     url: 'https://doi.org/10.1107/S174430910701194X',
     tags: ['Crystallization', 'X-ray Diffraction', 'Protein Crystals'],
+    summary: 'This structural biology paper reported the successful crystallization and X-ray diffraction analysis of the Murraya koenigii trypsin inhibitor. Using hanging-drop vapor diffusion, the authors obtained single diffracting protein crystals and determined unit cell dimensions required to solve its 3D atomic structure.',
     abstract: 'Reported successful hanging-drop vapor diffusion crystallization and high-resolution synchrotron X-ray diffraction of Murraya koenigii trypsin inhibitor crystals.',
     keyTakeaways: [
       'Obtained diffracting protein crystals of M. koenigii trypsin inhibitor.',
@@ -297,6 +313,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1007/978-1-4614-6280-4_2',
     url: 'https://doi.org/10.1007/978-1-4614-6280-4_2',
     tags: ['Book Chapter', 'Mutagenesis Pathway', 'DNA Repair', 'Review', 'DSB Repair'],
+    summary: 'This comprehensive reference book chapter synthesizes the genetic, biochemical, and structural pathways of double-strand break-dependent stress-induced mutagenesis in bacteria. It details how RecBCD, RecA, RpoS, LexA, and DinB cooperate to drive mutagenic repair and discusses evolutionary consequences of stress-driven genome alteration.',
     abstract: 'Comprehensive book chapter detailing molecular mechanisms, enzymes, genetic networks, and evolutionary consequences of mutagenic DNA double-strand break repair under stress.',
     keyTakeaways: [
       'Provided canonical reference chapter on DSB-associated mutagenesis.',
@@ -314,6 +331,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1016/j.dnarep.2018.10.003',
     url: 'https://doi.org/10.1016/j.dnarep.2018.10.003',
     tags: ['Phage Mu N Protein', 'Fluorescent Foci', 'DNA Damage', 'In-Vivo Tracking'],
+    summary: 'The authors engineered fluorescent protein fusions using the N protein of bacteriophage Mu to visualize DNA damage in living bacterial cells. Unlike end-binding reporters, Mu N-GFP specifically labels single-stranded DNA and recombination intermediates, providing a powerful imaging tool for tracking homologous recombination dynamics in real time.',
     abstract: 'Engineered fluorescent reporter fusions of phage Mu N protein to visualize single-stranded DNA and recombination intermediates inside living cells.',
     keyTakeaways: [
       'Developed phage Mu N protein fluorescent reporter for DNA damage foci.',
@@ -331,6 +349,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1007/s00044-010-9498-8',
     url: 'https://doi.org/10.1007/s00044-010-9498-8',
     tags: ['Physicochemical Stability', 'Miraculin-like Protein', 'Medicinal Chemistry'],
+    summary: 'This biophysical paper evaluated the conformational stability and thermal unfolding kinetics of the Murraya koenigii miraculin-like protein. The researchers demonstrated that the protein maintains its native tertiary structure and binding capacity across extreme acidic and basic pH conditions.',
     abstract: 'Investigated conformational stability, thermal unfolding kinetics, and pH resilience of miraculin-like protein from Murraya koenigii under diverse biophysical conditions.',
     keyTakeaways: [
       'Mapped thermal denaturing transition states for miraculin-like protein.',
@@ -348,6 +367,7 @@ export const SHEE_PUBLICATIONS = [
     doi: '10.1002/btm2.10086',
     url: 'https://doi.org/10.1002/btm2.10086',
     tags: ['Bioengineering', 'Clinical Automation', 'Microfluidics', 'Robotics', 'Diagnostics'],
+    summary: 'This bioengineering study presented the design, microfluidic architecture, and robotic automation of a miniaturized clinical laboratory platform. The system automates complex diagnostic assays with high precision, dramatically accelerating sample processing times for point-of-care medical testing.',
     abstract: 'Describes the design, fluidic micro-architecture, and automated robotic systems of a miniaturized clinical laboratory platform for rapid diagnostic immunoassay and molecular testing.',
     keyTakeaways: [
       'Engineered automated microfluidic robotic clinical testing platform.',
@@ -627,6 +647,7 @@ export function searchPublications(query) {
     p.authors.toLowerCase().includes(q) ||
     p.journal.toLowerCase().includes(q) ||
     p.tags.some(t => t.toLowerCase().includes(q)) ||
+    (p.summary && p.summary.toLowerCase().includes(q)) ||
     p.abstract.toLowerCase().includes(q)
   );
 }
