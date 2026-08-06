@@ -137,35 +137,23 @@ export default function LiveDrugKineticsChart({ selectedDrug, dosage, isApplied,
 
             {/* Dynamic Curve Calculations */}
             {(() => {
-              const getControlY = (t) => {
-                const u = 1 - t;
-                return u * u * u * 130 + 3 * u * u * t * 120 + 3 * u * t * t * 40 + t * t * t * 30;
-              };
-
-              const getTreatedY = (t) => {
-                const cY = getControlY(t);
-                if (!isApplied) return cY;
-                const suppressionFrac = Math.min(0.95, currentSuppression / 100);
-                const bottomY = 138;
-                return cY + (bottomY - cY) * suppressionFrac;
-              };
-
-              const getX = (t) => {
-                const u = 1 - t;
-                return u * u * u * 40 + 3 * u * u * t * 150 + 3 * u * t * t * 250 + t * t * t * 480;
-              };
-
-              const treatedPathD = Array.from({ length: 21 }, (_, i) => {
-                const stepT = i / 20;
-                const px = getX(stepT);
-                const py = getTreatedY(stepT);
-                return `${i === 0 ? 'M' : 'L'} ${px.toFixed(1)} ${py.toFixed(1)}`;
-              }).join(' ');
-
               const currentT = Math.max(0, Math.min(1, generation / 100));
-              const cx = getX(currentT);
-              const controlY = getControlY(currentT);
-              const treatedY = getTreatedY(currentT);
+              const u = 1 - currentT;
+              const tt = currentT * currentT;
+              const uu = u * u;
+              const uuu = uu * u;
+              const ttt = tt * currentT;
+
+              // Exact Cubic Bezier X position: M 40 ... C 150, 250, 480
+              const cx = uuu * 40 + 3 * uu * currentT * 150 + 3 * u * tt * 250 + ttt * 480;
+
+              // Control Curve Y position: M 40 130 C 150 120, 250 40, 480 30
+              const controlY = uuu * 130 + 3 * uu * currentT * 120 + 3 * u * tt * 40 + ttt * 30;
+
+              // Treated Curve Y position: M 40 130 C 150 135, 250 138, 480 138 (Flat along bottom)
+              const treatedY = isApplied
+                ? uuu * 130 + 3 * uu * currentT * 135 + 3 * u * tt * 138 + ttt * 138
+                : controlY;
 
               return (
                 <g key="kinetics-curves-and-indicators">
@@ -177,19 +165,27 @@ export default function LiveDrugKineticsChart({ selectedDrug, dosage, isApplied,
                     strokeWidth="3"
                   />
 
-                  {/* Treated Path (Green curve) */}
+                  {/* Treated Path (Green curve when applied, Grey dashed when inactive) */}
                   <path
-                    d={treatedPathD}
+                    d={isApplied
+                      ? "M 40 130 C 150 135, 250 138, 480 138"
+                      : "M 40 130 C 150 120, 250 40, 480 30"}
                     fill="none"
                     stroke={isApplied ? "#22c55e" : "#94a3b8"}
                     strokeWidth="3"
                     strokeDasharray={isApplied ? "none" : "5 5"}
                   />
 
-                  {/* Live Indicator Pin */}
+                  {/* Live Indicator Vertical Pin */}
                   <line x1={cx} y1="20" x2={cx} y2="140" stroke="#a78bfa" strokeWidth="1.5" strokeDasharray="3 3" />
+
+                  {/* Centered Red Dot on Red Control Curve */}
                   <circle cx={cx} cy={controlY} r="5.5" fill="#ef4444" stroke="#ffffff" strokeWidth="2" />
-                  <circle cx={cx} cy={treatedY} r="5.5" fill={isApplied ? "#22c55e" : "#94a3b8"} stroke="#ffffff" strokeWidth="2" />
+
+                  {/* Centered Green Dot on Green Treated Curve */}
+                  {isApplied && (
+                    <circle cx={cx} cy={treatedY} r="5.5" fill="#22c55e" stroke="#ffffff" strokeWidth="2" />
+                  )}
                 </g>
               );
             })()}
