@@ -135,47 +135,58 @@ export default function LiveDrugKineticsChart({ selectedDrug, dosage, isApplied,
             <text x="370" y="155" fill="#94a3b8" fontSize="9">Gen 75</text>
             <text x="475" y="155" fill="#94a3b8" fontSize="9" textAnchor="end">Gen 100</text>
 
-            {/* Control Path (Red curve) */}
-            <path
-              d="M 40 130 C 150 120, 250 40, 480 30"
-              fill="none"
-              stroke="#ef4444"
-              strokeWidth="3"
-            />
-
-            {/* Treated Path (Green curve) */}
-            <path
-              d={isApplied 
-                ? "M 40 130 C 150 135, 250 138, 480 138" 
-                : "M 40 130 C 150 120, 250 40, 480 30"}
-              fill="none"
-              stroke={isApplied ? "#22c55e" : "#94a3b8"}
-              strokeWidth="3"
-              strokeDasharray={isApplied ? "none" : "5 5"}
-            />
-
-            {/* Live Indicator Pin */}
+            {/* Dynamic Curve Calculations */}
             {(() => {
-              const t = Math.max(0, Math.min(1, generation / 100));
-              const u = 1 - t;
-              const tt = t * t;
-              const uu = u * u;
-              const uuu = uu * u;
-              const ttt = tt * t;
+              const getControlY = (t) => {
+                const u = 1 - t;
+                return u * u * u * 130 + 3 * u * u * t * 120 + 3 * u * t * t * 40 + t * t * t * 30;
+              };
 
-              // Exact Cubic Bezier X position: M 40 ... C 150, 250, 480
-              const cx = uuu * 40 + 3 * uu * t * 150 + 3 * u * tt * 250 + ttt * 480;
+              const getTreatedY = (t) => {
+                const cY = getControlY(t);
+                if (!isApplied) return cY;
+                const suppressionFrac = Math.min(0.95, currentSuppression / 100);
+                const bottomY = 138;
+                return cY + (bottomY - cY) * suppressionFrac;
+              };
 
-              // Exact Control Curve Y position: M ... 130 C ... 120, 40, 30
-              const controlY = uuu * 130 + 3 * uu * t * 120 + 3 * u * tt * 40 + ttt * 30;
+              const getX = (t) => {
+                const u = 1 - t;
+                return u * u * u * 40 + 3 * u * u * t * 150 + 3 * u * t * t * 250 + t * t * t * 480;
+              };
 
-              // Exact Treated Curve Y position: M ... 130 C ... 135, 138, 138
-              const treatedY = isApplied
-                ? uuu * 130 + 3 * uu * t * 135 + 3 * u * tt * 138 + ttt * 138
-                : controlY;
+              const treatedPathD = Array.from({ length: 21 }, (_, i) => {
+                const stepT = i / 20;
+                const px = getX(stepT);
+                const py = getTreatedY(stepT);
+                return `${i === 0 ? 'M' : 'L'} ${px.toFixed(1)} ${py.toFixed(1)}`;
+              }).join(' ');
+
+              const currentT = Math.max(0, Math.min(1, generation / 100));
+              const cx = getX(currentT);
+              const controlY = getControlY(currentT);
+              const treatedY = getTreatedY(currentT);
 
               return (
-                <g key="live-indicator-pin">
+                <g key="kinetics-curves-and-indicators">
+                  {/* Control Path (Red curve) */}
+                  <path
+                    d="M 40 130 C 150 120, 250 40, 480 30"
+                    fill="none"
+                    stroke="#ef4444"
+                    strokeWidth="3"
+                  />
+
+                  {/* Treated Path (Green curve) */}
+                  <path
+                    d={treatedPathD}
+                    fill="none"
+                    stroke={isApplied ? "#22c55e" : "#94a3b8"}
+                    strokeWidth="3"
+                    strokeDasharray={isApplied ? "none" : "5 5"}
+                  />
+
+                  {/* Live Indicator Pin */}
                   <line x1={cx} y1="20" x2={cx} y2="140" stroke="#a78bfa" strokeWidth="1.5" strokeDasharray="3 3" />
                   <circle cx={cx} cy={controlY} r="5.5" fill="#ef4444" stroke="#ffffff" strokeWidth="2" />
                   <circle cx={cx} cy={treatedY} r="5.5" fill={isApplied ? "#22c55e" : "#94a3b8"} stroke="#ffffff" strokeWidth="2" />
