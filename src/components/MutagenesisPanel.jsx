@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MUTAGENESIS_TYPES } from '../data/mutagenesis_data';
+import LiveDnaMutagenesisSimulator from './LiveDnaMutagenesisSimulator';
 
 export default function MutagenesisPanel({ onSelectLiteratureTerm }) {
   const [selectedTypeId, setSelectedTypeId] = useState('sim');
@@ -83,6 +84,9 @@ export default function MutagenesisPanel({ onSelectLiteratureTerm }) {
               <span className="metric-val text-red">{selectedType.stressedRatePerGen} / bp / gen</span>
             </div>
           </div>
+
+          {/* Interactive Live DNA Sequence & Base-Pairing Alignment Simulator */}
+          <LiveDnaMutagenesisSimulator selectedType={selectedType} />
 
           {/* Key Enzymes Interactive Tags */}
           <div className="detail-section">
