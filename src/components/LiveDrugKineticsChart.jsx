@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function LiveDrugKineticsChart({ selectedDrug, dosage, isApplied, currentSuppression, effectiveRate, resistanceDelay }) {
   const [generation, setGeneration] = useState(0);
@@ -14,11 +14,12 @@ export default function LiveDrugKineticsChart({ selectedDrug, dosage, isApplied,
     const treatedRate = Math.max(1e-11, baseControlRate * (1 - drugSuppressionFraction));
 
     for (let gen = 0; gen <= 100; gen += 5) {
-      // Control climbs under stress
-      const controlVal = Math.min(1.5e-6, 1.0e-7 + (baseControlRate - 1.0e-7) * (1 - Math.exp(-gen / 25)));
-      // Treated drops when drug is active
+      // Control climbs up under stress (1.0e-10 -> 1.5e-6)
+      const controlVal = Math.min(1.5e-6, 1.0e-10 + (baseControlRate - 1.0e-10) * (1 - Math.exp(-gen / 30)));
+      
+      // Treated drops down when drug is active (1.5e-6 -> treatedRate)
       const treatedVal = isApplied 
-        ? Math.max(treatedRate, controlVal * (1 - drugSuppressionFraction * (1 - Math.exp(-gen / 15))))
+        ? Math.max(treatedRate, baseControlRate * Math.exp(-gen / (20 + (100 - currentSuppression) / 2)))
         : controlVal;
 
       points.push({
@@ -53,13 +54,33 @@ export default function LiveDrugKineticsChart({ selectedDrug, dosage, isApplied,
     ? Math.round(activePoint.treatedRate * 1e9 * (generation / 20))
     : controlMutantsAcc;
 
+  // SVG Coordinates calculation for separated lines
+  const getCoords = (gen, rate, isControl) => {
+    const x = 40 + (gen / 100) * 440;
+    if (isControl) {
+      // Control goes UP: y=130 (Gen 0) -> y=30 (Gen 100)
+      return { x, y: 130 - (gen / 100) * 100 };
+    } else {
+      if (!isApplied) {
+        // Inactive baseline at bottom
+        return { x, y: 135 };
+      }
+      // Treated goes DOWN: y=30 (Gen 0) -> y=138 (Gen 100)
+      return { x, y: 30 + (gen / 100) * 108 };
+    }
+  };
+
+  const currentX = 40 + (generation / 100) * 440;
+  const controlPinY = 130 - (generation / 100) * 100;
+  const treatedPinY = isApplied ? (30 + (generation / 100) * 108) : 135;
+
   return (
     <div className="live-drug-kinetics-card">
       <div className="kinetics-header-row">
         <div className="kinetics-title">
           <h4>📉 Live Dynamic Anti-Evolutionary Kinetics Assay (100 Generations)</h4>
           <span className="kinetics-subtitle">
-            Real-time simulation comparing Untreated Control vs {selectedDrug.name} ({dosage} nM)
+            Real-time dual kinetics curve: Red line (Untreated Control) climbs UP under stress; Green line ({selectedDrug.name}) drops DOWN upon drug administration
           </span>
         </div>
 
@@ -106,15 +127,17 @@ export default function LiveDrugKineticsChart({ selectedDrug, dosage, isApplied,
       {/* Live Kinetics Visual Dual Chart */}
       <div className="kinetics-chart-box">
         <div className="chart-legend-row">
-          <span className="legend-tag control">🔴 Untreated Stressed Control (Wild-Type)</span>
+          <span className="legend-tag control">🔴 Untreated Control: Mutation Escalation (Climbs UP)</span>
           <span className="legend-tag treated">
-            {isApplied ? `🟢 ${selectedDrug.name} Adjuvant (${dosage} nM)` : '⚪ Adjuvant Inactive (Click Administer)'}
+            {isApplied 
+              ? `🟢 ${selectedDrug.name} (${dosage} nM): Mutagenesis Suppression (Drops DOWN)` 
+              : '⚪ Adjuvant Inactive (Click "Administer" above to see Green Curve drop DOWN)'}
           </span>
         </div>
 
-        {/* Simulated Graph SVG */}
+        {/* Simulated Graph SVG with 2 Separated Distinct Curves */}
         <div className="svg-chart-container">
-          <svg viewBox="0 0 500 160" className="kinetics-svg">
+          <svg viewBox="0 0 500 170" className="kinetics-svg">
             {/* Grid lines */}
             <line x1="40" y1="20" x2="480" y2="20" stroke="rgba(255,255,255,0.08)" strokeDasharray="4" />
             <line x1="40" y1="60" x2="480" y2="60" stroke="rgba(255,255,255,0.08)" strokeDasharray="4" />
@@ -123,72 +146,62 @@ export default function LiveDrugKineticsChart({ selectedDrug, dosage, isApplied,
             <line x1="40" y1="20" x2="40" y2="140" stroke="rgba(255,255,255,0.2)" />
 
             {/* Y-axis Labels */}
-            <text x="35" y="25" fill="#94a3b8" fontSize="9" textAnchor="end">1.5e-6</text>
+            <text x="35" y="25" fill="#ef4444" fontSize="9" fontWeight="bold" textAnchor="end">1.5e-6 (High Stress)</text>
             <text x="35" y="65" fill="#94a3b8" fontSize="9" textAnchor="end">1.0e-6</text>
             <text x="35" y="105" fill="#94a3b8" fontSize="9" textAnchor="end">5.0e-7</text>
-            <text x="35" y="143" fill="#94a3b8" fontSize="9" textAnchor="end">1.0e-10</text>
+            <text x="35" y="143" fill="#22c55e" fontSize="9" fontWeight="bold" textAnchor="end">1.0e-10 (Suppressed)</text>
 
             {/* X-axis Labels */}
-            <text x="40" y="155" fill="#94a3b8" fontSize="9">Gen 0</text>
-            <text x="150" y="155" fill="#94a3b8" fontSize="9">Gen 25</text>
-            <text x="260" y="155" fill="#94a3b8" fontSize="9">Gen 50</text>
-            <text x="370" y="155" fill="#94a3b8" fontSize="9">Gen 75</text>
-            <text x="475" y="155" fill="#94a3b8" fontSize="9" textAnchor="end">Gen 100</text>
+            <text x="40" y="158" fill="#94a3b8" fontSize="9">Gen 0</text>
+            <text x="150" y="158" fill="#94a3b8" fontSize="9">Gen 25</text>
+            <text x="260" y="158" fill="#94a3b8" fontSize="9">Gen 50</text>
+            <text x="370" y="158" fill="#94a3b8" fontSize="9">Gen 75</text>
+            <text x="475" y="158" fill="#94a3b8" fontSize="9" textAnchor="end">Gen 100</text>
 
-            {/* Dynamic Curve Calculations */}
-            {(() => {
-              const currentT = Math.max(0, Math.min(1, generation / 100));
-              const u = 1 - currentT;
-              const tt = currentT * currentT;
-              const uu = u * u;
-              const uuu = uu * u;
-              const ttt = tt * currentT;
+            {/* 🔴 Control Path: Red Curve Going UP */}
+            <path
+              d="M 40 130 C 140 120, 260 45, 480 30"
+              fill="none"
+              stroke="#ef4444"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+            />
+            <text x="440" y="24" fill="#ef4444" fontSize="9" fontWeight="bold">▲ Control Escalation</text>
 
-              // Exact Cubic Bezier X position: M 40 ... C 150, 250, 480
-              const cx = uuu * 40 + 3 * uu * currentT * 150 + 3 * u * tt * 250 + ttt * 480;
+            {/* 🟢 Treated Path: Green Curve Going DOWN */}
+            {isApplied ? (
+              <>
+                <path
+                  d="M 40 30 C 140 80, 260 135, 480 138"
+                  fill="none"
+                  stroke="#22c55e"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                />
+                <text x="440" y="152" fill="#22c55e" fontSize="9" fontWeight="bold">▼ Adjuvant Suppression</text>
+              </>
+            ) : (
+              <path
+                d="M 40 135 L 480 135"
+                fill="none"
+                stroke="#64748b"
+                strokeWidth="2"
+                strokeDasharray="4 4"
+              />
+            )}
 
-              // Control Curve Y position: M 40 130 C 150 120, 250 40, 480 30
-              const controlY = uuu * 130 + 3 * uu * currentT * 120 + 3 * u * tt * 40 + ttt * 30;
+            {/* Live Indicator Vertical Marker */}
+            <line x1={currentX} y1="20" x2={currentX} y2="140" stroke="#a78bfa" strokeWidth="1.5" strokeDasharray="3 3" />
 
-              // Treated Curve Y position: M 40 130 C 150 135, 250 138, 480 138 (Flat along bottom)
-              const treatedY = isApplied
-                ? uuu * 130 + 3 * uu * currentT * 135 + 3 * u * tt * 138 + ttt * 138
-                : controlY;
-
-              return (
-                <g key="kinetics-curves-and-indicators">
-                  {/* Control Path (Red curve) */}
-                  <path
-                    d="M 40 130 C 150 120, 250 40, 480 30"
-                    fill="none"
-                    stroke="#ef4444"
-                    strokeWidth="3"
-                  />
-
-                  {/* Treated Path (Green curve when applied, Grey dashed when inactive) */}
-                  <path
-                    d={isApplied
-                      ? "M 40 130 C 150 135, 250 138, 480 138"
-                      : "M 40 130 C 150 120, 250 40, 480 30"}
-                    fill="none"
-                    stroke={isApplied ? "#22c55e" : "#94a3b8"}
-                    strokeWidth="3"
-                    strokeDasharray={isApplied ? "none" : "5 5"}
-                  />
-
-                  {/* Live Indicator Vertical Pin */}
-                  <line x1={cx} y1="20" x2={cx} y2="140" stroke="#a78bfa" strokeWidth="1.5" strokeDasharray="3 3" />
-
-                  {/* Centered Red Dot on Red Control Curve */}
-                  <circle cx={cx} cy={controlY} r="5.5" fill="#ef4444" stroke="#ffffff" strokeWidth="2" />
-
-                  {/* Centered Green Dot on Green Treated Curve */}
-                  {isApplied && (
-                    <circle cx={cx} cy={treatedY} r="5.5" fill="#22c55e" stroke="#ffffff" strokeWidth="2" />
-                  )}
-                </g>
-              );
-            })()}
+            {/* 🔴 Control Pin (Rising) */}
+            <circle cx={currentX} cy={controlPinY} r="6" fill="#ef4444" stroke="#ffffff" strokeWidth="2" />
+            
+            {/* 🟢 Treated Pin (Falling) */}
+            {isApplied ? (
+              <circle cx={currentX} cy={treatedPinY} r="6" fill="#22c55e" stroke="#ffffff" strokeWidth="2" />
+            ) : (
+              <circle cx={currentX} cy={135} r="4" fill="#64748b" stroke="#ffffff" strokeWidth="1" />
+            )}
           </svg>
         </div>
       </div>
@@ -196,7 +209,7 @@ export default function LiveDrugKineticsChart({ selectedDrug, dosage, isApplied,
       {/* Live Comparison Counter Cards */}
       <div className="kinetics-comparison-grid">
         <div className="kinetics-card control">
-          <div className="kinetics-card-title">🔴 Untreated Wild-Type Control</div>
+          <div className="kinetics-card-title">🔴 Untreated Wild-Type Control (Climbing UP)</div>
           <div className="kinetics-stat">
             <span className="lbl">Live Mutation Rate:</span>
             <span className="val text-red">{(activePoint?.controlRate || 1.2e-6).toExponential(2)} / bp / gen</span>
@@ -213,7 +226,7 @@ export default function LiveDrugKineticsChart({ selectedDrug, dosage, isApplied,
 
         <div className={`kinetics-card treated ${isApplied ? 'active' : ''}`}>
           <div className="kinetics-card-title">
-            {isApplied ? `🟢 ${selectedDrug.name} (${currentSuppression}% Suppressed)` : '⚪ Adjuvant Inactive'}
+            {isApplied ? `🟢 ${selectedDrug.name} (Dropping DOWN - ${currentSuppression}% Suppressed)` : '⚪ Adjuvant Inactive (Click Administer Above)'}
           </div>
           <div className="kinetics-stat">
             <span className="lbl">Live Mutation Rate:</span>
