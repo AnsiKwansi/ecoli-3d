@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Default template sequence (24 bp coding fragment)
+// Default wild-type template sequence (24 bp coding fragment)
 const INITIAL_TEMPLATE = ['A', 'T', 'G', 'C', 'G', 'T', 'A', 'T', 'T', 'C', 'C', 'G', 'A', 'T', 'T', 'A', 'G', 'C', 'G', 'T', 'A', 'C', 'G', 'T'];
 
 const COMPLEMENT_MAP = {
@@ -14,157 +14,173 @@ const COMPLEMENT_MAP = {
 export default function LiveDnaMutagenesisSimulator({ selectedType }) {
   const [templateStrand, setTemplateStrand] = useState(INITIAL_TEMPLATE);
   const [replicatedStrand, setReplicatedStrand] = useState(INITIAL_TEMPLATE.map(b => COMPLEMENT_MAP[b] || 'T'));
-  const [stressLevel, setStressLevel] = useState(75); // 0% to 100%
   const [activeMutations, setActiveMutations] = useState([]);
   const [replicationCycle, setReplicationCycle] = useState(1);
-  const [isSimulating, setIsSimulating] = useState(false);
-  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [isAutoMutating, setIsAutoMutating] = useState(false);
 
-  // Initialize or reset strands based on selected mutagenesis type
+  // Initialize or reset strands back to wild-type
   const resetToWildtype = () => {
     const wtTemplate = [...INITIAL_TEMPLATE];
-    const wtComplement = wtTemplate.map(b => COMPLEMENT_MAP[b]);
+    const wtComplement = wtTemplate.map(b => COMPLEMENT_MAP[b] || 'T');
     setTemplateStrand(wtTemplate);
     setReplicatedStrand(wtComplement);
     setActiveMutations([]);
     setReplicationCycle(1);
+    setIsAutoMutating(false);
   };
 
-  // Induce a live mutation event based on current mutagenesis type & stress level
-  const induceLiveMutation = () => {
-    let newTemplate = [...templateStrand];
-    let newReplicated = [...replicatedStrand];
-    let newMutationsList = [];
+  // Induce a single mutation event, ACCUMULATING on top of existing sequence
+  const induceSingleMutation = (overrideType) => {
+    setTemplateStrand(prevTemplate => {
+      setReplicatedStrand(prevReplicated => {
+        setReplicationCycle(prevCycle => {
+          let newTemplate = [...prevTemplate];
+          let newReplicated = [...prevReplicated];
+          let newEvent = null;
 
-    const typeId = selectedType?.id || 'sim';
+          const typeId = overrideType || selectedType?.id || 'sim';
+          const nextCycleNum = prevCycle + 1;
 
-    if (typeId === 'base_sub') {
-      // Base substitution: G:C -> A:T transition or C:G -> A:T transversion
-      const targetIdx = Math.floor(Math.random() * (newTemplate.length - 2)) + 1;
-      const originalBase = newTemplate[targetIdx];
-      const newBase = originalBase === 'G' ? 'A' : (originalBase === 'A' ? 'G' : (originalBase === 'C' ? 'T' : 'C'));
-      newTemplate[targetIdx] = newBase;
-      // Replicated strand mispairs initially or fixes new complement
-      newReplicated[targetIdx] = COMPLEMENT_MAP[newBase];
-      newMutationsList.push({
-        pos: targetIdx + 1,
-        type: 'Base Substitution',
-        desc: `Position #${targetIdx + 1}: ${originalBase} → ${newBase} (${originalBase === 'G' || originalBase === 'A' ? 'Transition' : 'Transversion'})`,
-        status: 'MUTATION'
-      });
-    } 
-    else if (typeId === 'tls') {
-      // Translesion Synthesis: UV causes T-T dimer at pos 7-8, DinB bypasses with mispair
-      const targetIdx = 7;
-      newTemplate[targetIdx] = 'TT';
-      newTemplate[targetIdx + 1] = 'TT';
-      newReplicated[targetIdx] = 'A';
-      newReplicated[targetIdx + 1] = 'C'; // Error-prone TLS bypass misinsertion
-      newMutationsList.push({
-        pos: targetIdx + 1,
-        type: 'TLS Bypass Error',
-        desc: `Position #${targetIdx + 1}-${targetIdx + 2}: Pyrimidine T-T Dimer bypassed by Pol IV (DinB), misinserting C opposite dimer`,
-        status: 'LESION_BYPASS'
-      });
-    }
-    else if (typeId === 'oxidative') {
-      // Oxidative 8-oxoG: Guanine oxidizes to 8-oxoG at pos 4, mispairs with Adenine
-      const targetIdx = 4;
-      newTemplate[targetIdx] = '8oG';
-      newReplicated[targetIdx] = 'A'; // 8-oxoG:A mispair -> G:C to T:A transversion
-      newMutationsList.push({
-        pos: targetIdx + 1,
-        type: '8-oxoG Oxidative Damage',
-        desc: `Position #${targetIdx + 1}: Guanine oxidized to 8-oxoG by ROS; mispairs with Adenine causing G:C → T:A transversion`,
-        status: 'OXIDATIVE'
-      });
-    }
-    else if (typeId === 'frameshift') {
-      // Frameshift +1 or -1 bp in homopolymer run (T T T at pos 6-8)
-      const isInsertion = Math.random() > 0.5;
-      if (isInsertion) {
-        newTemplate.splice(8, 0, 'T');
-        newReplicated.splice(8, 0, 'A');
-        newMutationsList.push({
-          pos: 9,
-          type: '+1 bp Frameshift Insertion',
-          desc: 'Position #9: Pol IV slippage inserted +1 Thymine in TTT homopolymer run, shifting reading frame (+1)',
-          status: 'FRAMESHIFT'
+          if (typeId === 'base_sub') {
+            const validPositions = [];
+            for (let i = 0; i < newTemplate.length; i++) {
+              if (['A', 'T', 'C', 'G'].includes(newTemplate[i])) validPositions.push(i);
+            }
+            if (validPositions.length > 0) {
+              const targetIdx = validPositions[Math.floor(Math.random() * validPositions.length)];
+              const originalBase = newTemplate[targetIdx];
+              const newBase = originalBase === 'G' ? 'A' : (originalBase === 'A' ? 'G' : (originalBase === 'C' ? 'T' : 'C'));
+              newTemplate[targetIdx] = newBase;
+              newReplicated[targetIdx] = COMPLEMENT_MAP[newBase];
+              newEvent = {
+                cycle: nextCycleNum,
+                pos: targetIdx + 1,
+                type: 'Base Substitution',
+                desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): ${originalBase} → ${newBase} (${originalBase === 'G' || originalBase === 'A' ? 'Transition' : 'Transversion'})`,
+                status: 'MUTATION'
+              };
+            }
+          }
+          else if (typeId === 'tls') {
+            const targetIdx = Math.floor(Math.random() * (newTemplate.length - 2));
+            newTemplate[targetIdx] = 'TT';
+            newReplicated[targetIdx] = 'C'; // Pol IV TLS misinsertion
+            newEvent = {
+              cycle: nextCycleNum,
+              pos: targetIdx + 1,
+              type: 'TLS Bypass Error',
+              desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): T-T Dimer bypassed by Pol IV (DinB), misinserting C`,
+              status: 'LESION_BYPASS'
+            };
+          }
+          else if (typeId === 'oxidative') {
+            const targetIdx = Math.floor(Math.random() * newTemplate.length);
+            newTemplate[targetIdx] = '8oG';
+            newReplicated[targetIdx] = 'A'; // 8-oxoG:A mispair
+            newEvent = {
+              cycle: nextCycleNum,
+              pos: targetIdx + 1,
+              type: '8-oxoG Oxidative Damage',
+              desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): Hydroxyl radical oxidized Guanine to 8-oxoG (8-oxoG:A mispair)`,
+              status: 'OXIDATIVE'
+            };
+          }
+          else if (typeId === 'frameshift') {
+            const isInsertion = Math.random() > 0.5;
+            const targetIdx = Math.floor(Math.random() * (newTemplate.length - 2));
+            if (isInsertion) {
+              newTemplate.splice(targetIdx, 0, 'T');
+              newReplicated.splice(targetIdx, 0, 'A');
+              newEvent = {
+                cycle: nextCycleNum,
+                pos: targetIdx + 1,
+                type: '+1 bp Frameshift Insertion',
+                desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): Pol IV slippage inserted +1 bp Thymine`,
+                status: 'FRAMESHIFT'
+              };
+            } else {
+              newTemplate.splice(targetIdx, 1);
+              newReplicated.splice(targetIdx, 1);
+              newEvent = {
+                cycle: nextCycleNum,
+                pos: targetIdx + 1,
+                type: '-1 bp Frameshift Deletion',
+                desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): Polymerase slippage deleted 1 bp`,
+                status: 'FRAMESHIFT'
+              };
+            }
+          }
+          else if (typeId === 'alkylation') {
+            const targetIdx = Math.floor(Math.random() * newTemplate.length);
+            newTemplate[targetIdx] = 'meG';
+            newReplicated[targetIdx] = 'T';
+            newEvent = {
+              cycle: nextCycleNum,
+              pos: targetIdx + 1,
+              type: 'O6-Methylguanine Alkylation',
+              desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): MNNG alkylated Guanine to O6-meG (pairing with Thymine)`,
+              status: 'ALKYLATION'
+            };
+          }
+          else if (typeId === 'is_transposition') {
+            const targetIdx = Math.floor(Math.random() * (newTemplate.length - 1));
+            newTemplate.splice(targetIdx, 0, 'IS5');
+            newReplicated.splice(targetIdx, 0, 'IS5');
+            newEvent = {
+              cycle: nextCycleNum,
+              pos: targetIdx + 1,
+              type: 'IS5 Transposon Insertion',
+              desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): Stress-induced IS5 transposition inserted element`,
+              status: 'TRANSPOSON'
+            };
+          }
+          else {
+            // SIM or Spontaneous: Random base substitution
+            const targetIdx = Math.floor(Math.random() * newTemplate.length);
+            const originalBase = newTemplate[targetIdx];
+            const newBase = originalBase === 'A' ? 'G' : (originalBase === 'G' ? 'C' : 'T');
+            newTemplate[targetIdx] = newBase;
+            newReplicated[targetIdx] = COMPLEMENT_MAP[newBase] || 'A';
+            newEvent = {
+              cycle: nextCycleNum,
+              pos: targetIdx + 1,
+              type: 'DSB Repair Mutation',
+              desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): Stress-induced Pol IV mutagenic error (${originalBase} → ${newBase})`,
+              status: 'MUTATION'
+            };
+          }
+
+          if (newEvent) {
+            setActiveMutations(prev => [newEvent, ...prev]);
+          }
+
+          return nextCycleNum;
         });
-      } else {
-        newTemplate.splice(8, 1);
-        newReplicated.splice(8, 1);
-        newMutationsList.push({
-          pos: 8,
-          type: '-1 bp Frameshift Deletion',
-          desc: 'Position #8: Polymerase slippage deleted 1 bp in homopolymer run, shifting reading frame (-1)',
-          status: 'FRAMESHIFT'
-        });
-      }
-    }
-    else if (typeId === 'alkylation') {
-      // Alkylation MNNG: O6-methylguanine at pos 11, pairs with T
-      const targetIdx = 10;
-      newTemplate[targetIdx] = 'meG';
-      newReplicated[targetIdx] = 'T';
-      newMutationsList.push({
-        pos: targetIdx + 1,
-        type: 'O6-Methylguanine Alkylation',
-        desc: `Position #${targetIdx + 1}: MNNG alkylation generated O6-meG, pairing with Thymine to fix G:C → A:T mutation`,
-        status: 'ALKYLATION'
+        return newReplicated;
       });
-    }
-    else if (typeId === 'is_transposition') {
-      // Insertion Sequence transposition
-      const targetIdx = 12;
-      newTemplate.splice(targetIdx, 0, 'IS5', 'IS5');
-      newReplicated.splice(targetIdx, 0, 'IS5', 'IS5');
-      newMutationsList.push({
-        pos: targetIdx + 1,
-        type: 'IS5 Transposon Insertion',
-        desc: `Position #${targetIdx + 1}: Stress-induced transposition inserted mobile IS5 element block into promoter/gene`,
-        status: 'TRANSPOSON'
-      });
-    }
-    else if (typeId === 'sim') {
-      // Stress-Induced Mutagenesis: Cluster of multiple mutations around DSB site
-      const targetIdx1 = 5;
-      const targetIdx2 = 14;
-      newTemplate[targetIdx1] = 'A';
-      newReplicated[targetIdx1] = 'C'; // Mismatch
-      newTemplate[targetIdx2] = '8oG';
-      newReplicated[targetIdx2] = 'A';
-      newMutationsList.push({
-        pos: targetIdx1 + 1,
-        type: 'DSB Hotspot Mutation #1',
-        desc: `Position #${targetIdx1 + 1}: Pol IV error near DSB repair focus (G → A substitution)`,
-        status: 'MUTATION'
-      });
-      newMutationsList.push({
-        pos: targetIdx2 + 1,
-        type: 'DSB Hotspot Mutation #2',
-        desc: `Position #${targetIdx2 + 1}: RecA-dependent oxidative lesion cluster (8-oxoG:A mispair)`,
-        status: 'MUTATION'
-      });
-    }
-    else {
-      // Basal replicative error
-      const targetIdx = 11;
-      newTemplate[targetIdx] = 'C';
-      newReplicated[targetIdx] = 'A'; // Mismatch
-      newMutationsList.push({
-        pos: targetIdx + 1,
-        type: 'Spontaneous Proofreading Error',
-        desc: `Position #${targetIdx + 1}: Pol III DnaQ exonuclease missed C:A mispair during DNA synthesis`,
-        status: 'MUTATION'
-      });
-    }
-
-    setTemplateStrand(newTemplate);
-    setReplicatedStrand(newReplicated);
-    setActiveMutations(newMutationsList);
-    setReplicationCycle(prev => prev + 1);
+      return newTemplate;
+    });
   };
+
+  // Induce 5x Multi-Mutation Burst
+  const induceMultiBurst = () => {
+    for (let i = 0; i < 5; i++) {
+      setTimeout(() => {
+        induceSingleMutation();
+      }, i * 120);
+    }
+  };
+
+  // Continuous Auto-Mutate Timer
+  useEffect(() => {
+    let timer = null;
+    if (isAutoMutating) {
+      timer = setInterval(() => {
+        induceSingleMutation();
+      }, 1200);
+    }
+    return () => clearInterval(timer);
+  }, [isAutoMutating, selectedType]);
 
   // Calculate live matching stats
   let totalBases = Math.min(templateStrand.length, replicatedStrand.length);
@@ -207,29 +223,41 @@ export default function LiveDnaMutagenesisSimulator({ selectedType }) {
     });
   }
 
-  const fidelityPercentage = ((matchCount / totalBases) * 100).toFixed(1);
+  const fidelityPercentage = totalBases > 0 ? ((matchCount / totalBases) * 100).toFixed(1) : '100.0';
 
   return (
     <div className="live-dna-simulator-card">
       <div className="sim-card-header">
         <div className="sim-header-title">
-          <h4>🧬 Live Real-Condition DNA Sequence & Base-Pairing Alignment</h4>
+          <h4>🧬 Multi-Step Accumulating DNA Mutagenesis & Sequence Alignment</h4>
           <span className="sim-subtitle">
-            Simulates Watson-Crick hydrogen bonding, base mispairings, and lesion bypass in real time
+            Induce multiple continuous mutation events across generations to simulate real cumulative genome divergence
           </span>
         </div>
         <div className="sim-header-actions">
           <button
             className="sim-action-btn primary"
-            onClick={induceLiveMutation}
+            onClick={() => induceSingleMutation()}
           >
-            ⚡ Induce Live Mutation Event ({selectedType?.name || 'SIM'})
+            ⚡ Induce 1× Mutation
+          </button>
+          <button
+            className="sim-action-btn burst"
+            onClick={induceMultiBurst}
+          >
+            💥 Induce 5× Multi-Burst
+          </button>
+          <button
+            className={`sim-action-btn toggle ${isAutoMutating ? 'active' : ''}`}
+            onClick={() => setIsAutoMutating(!isAutoMutating)}
+          >
+            {isAutoMutating ? '⏸ Pause Auto-Mutate' : '▶ Auto-Mutate Mode'}
           </button>
           <button
             className="sim-action-btn secondary"
             onClick={resetToWildtype}
           >
-            🔄 Reset to Wild-Type DNA
+            🔄 Reset to Wild-Type
           </button>
         </div>
       </div>
@@ -252,9 +280,9 @@ export default function LiveDnaMutagenesisSimulator({ selectedType }) {
           <span className="metric-lbl">DNA Lesions / Adducts</span>
           <span className="metric-num">{lesionCount} sites</span>
         </div>
-        <div className="sim-metric-badge">
-          <span className="metric-lbl">Replication Cycle</span>
-          <span className="metric-num">Gen #{replicationCycle}</span>
+        <div className="sim-metric-badge highlight">
+          <span className="metric-lbl">Accumulated Events</span>
+          <span className="metric-num">{activeMutations.length} mutations</span>
         </div>
       </div>
 
@@ -262,7 +290,7 @@ export default function LiveDnaMutagenesisSimulator({ selectedType }) {
       <div className="dna-strands-alignment-box">
         <div className="strand-label-row">
           <span className="strand-tag sense">Sense Strand (5' → 3')</span>
-          <span className="strand-tag-right">Watson-Crick Base Alignment</span>
+          <span className="strand-tag-right">Watson-Crick Base Alignment (Gen #{replicationCycle})</span>
         </div>
 
         {/* Top Strand: 5' to 3' */}
@@ -320,10 +348,10 @@ export default function LiveDnaMutagenesisSimulator({ selectedType }) {
         </div>
       </div>
 
-      {/* Active Mutation Log & Molecular Description */}
+      {/* Accumulated Mutation History Log */}
       {activeMutations.length > 0 ? (
         <div className="active-mutations-log">
-          <h5>⚡ Live Detected Mutation Events:</h5>
+          <h5>⚡ Accumulated Mutation History Log ({activeMutations.length} total events):</h5>
           <div className="mutation-log-items">
             {activeMutations.map((m, idx) => (
               <div key={idx} className={`log-item ${m.status.toLowerCase()}`}>
@@ -336,7 +364,7 @@ export default function LiveDnaMutagenesisSimulator({ selectedType }) {
       ) : (
         <div className="active-mutations-log clean">
           <span className="clean-icon">✅</span>
-          <span>DNA sequence is currently Wild-Type (100% Fidelity). Click <strong>"⚡ Induce Live Mutation Event"</strong> to simulate base mispairings under real stress conditions.</span>
+          <span>DNA sequence is wild-type. Click <strong>"⚡ Induce 1× Mutation"</strong>, <strong>"💥 5× Multi-Burst"</strong>, or <strong>"▶ Auto-Mutate Mode"</strong> to accumulate multiple mutations over time.</span>
         </div>
       )}
     </div>
