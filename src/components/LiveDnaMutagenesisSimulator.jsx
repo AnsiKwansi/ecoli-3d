@@ -11,6 +11,14 @@ const COMPLEMENT_MAP = {
   '-': '-',   // Frameshift deletion gap
 };
 
+// Helper function to guarantee choosing a different base
+function pickDifferentBase(current) {
+  const bases = ['A', 'T', 'C', 'G'];
+  const available = bases.filter(b => b !== current && current !== '8oG' && current !== 'meG' && current !== 'TT' && current !== 'IS5');
+  if (available.length === 0) return 'A';
+  return available[Math.floor(Math.random() * available.length)];
+}
+
 export default function LiveDnaMutagenesisSimulator({ selectedType }) {
   const [templateStrand, setTemplateStrand] = useState(INITIAL_TEMPLATE);
   const [replicatedStrand, setReplicatedStrand] = useState(INITIAL_TEMPLATE.map(b => COMPLEMENT_MAP[b] || 'T'));
@@ -29,7 +37,7 @@ export default function LiveDnaMutagenesisSimulator({ selectedType }) {
     setIsAutoMutating(false);
   };
 
-  // Induce a single mutation event cleanly without nested state setters
+  // Induce a single mutation event cleanly with guaranteed mutation effect
   const induceSingleMutation = (overrideType) => {
     let newTemplate = [...templateStrand];
     let newReplicated = [...replicatedStrand];
@@ -38,39 +46,66 @@ export default function LiveDnaMutagenesisSimulator({ selectedType }) {
     const typeId = overrideType || selectedType?.id || 'sim';
     const nextCycleNum = replicationCycle + 1;
 
-    if (typeId === 'base_sub') {
-      const validPositions = [];
-      for (let i = 0; i < newTemplate.length; i++) {
-        if (['A', 'T', 'C', 'G'].includes(newTemplate[i])) validPositions.push(i);
-      }
-      if (validPositions.length > 0) {
-        const targetIdx = validPositions[Math.floor(Math.random() * validPositions.length)];
-        const originalBase = newTemplate[targetIdx];
-        const newBase = originalBase === 'G' ? 'A' : (originalBase === 'A' ? 'G' : (originalBase === 'C' ? 'T' : 'C'));
-        newTemplate[targetIdx] = newBase;
-        newReplicated[targetIdx] = COMPLEMENT_MAP[newBase] || 'A';
-        newEvent = {
-          cycle: nextCycleNum,
-          pos: targetIdx + 1,
-          type: 'Base Substitution',
-          desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): ${originalBase} → ${newBase} (${originalBase === 'G' || originalBase === 'A' ? 'Transition' : 'Transversion'})`,
-          status: 'MUTATION'
-        };
-      }
+    if (typeId === 'spontaneous') {
+      // Spontaneous Replicative: Pol III DnaQ exonuclease proofreading failure (mismatch)
+      const targetIdx = Math.floor(Math.random() * newTemplate.length);
+      const originalBase = newTemplate[targetIdx];
+      const mispairedBase = pickDifferentBase(COMPLEMENT_MAP[originalBase] || 'T');
+      newReplicated[targetIdx] = mispairedBase; // Mismatch on replicated strand
+      newEvent = {
+        cycle: nextCycleNum,
+        pos: targetIdx + 1,
+        type: 'Spontaneous Proofreading Mismatch',
+        desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): Pol III DnaQ exonuclease proofreading failed; left ${originalBase}:${mispairedBase} mismatch`,
+        status: 'MUTATION'
+      };
+    }
+    else if (typeId === 'sim') {
+      // Stress-Induced Mutagenesis (SIM): Pol IV error near DSB focus
+      const targetIdx = Math.floor(Math.random() * newTemplate.length);
+      const originalBase = newTemplate[targetIdx];
+      const newBase = pickDifferentBase(originalBase);
+      newTemplate[targetIdx] = newBase;
+      newReplicated[targetIdx] = pickDifferentBase(COMPLEMENT_MAP[newBase] || 'A'); // Error-prone misrepair
+      newEvent = {
+        cycle: nextCycleNum,
+        pos: targetIdx + 1,
+        type: 'Stress-Induced Mutagenic DSB Repair',
+        desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): RecA/Pol IV mutagenic repair near DSB site (${originalBase} → ${newBase})`,
+        status: 'MUTATION'
+      };
+    }
+    else if (typeId === 'base_sub') {
+      // Base Substitution: Transition or Transversion
+      const targetIdx = Math.floor(Math.random() * newTemplate.length);
+      const originalBase = newTemplate[targetIdx];
+      const newBase = pickDifferentBase(originalBase);
+      newTemplate[targetIdx] = newBase;
+      newReplicated[targetIdx] = COMPLEMENT_MAP[newBase] || 'T';
+      const isTransition = (originalBase === 'A' && newBase === 'G') || (originalBase === 'G' && newBase === 'A') || (originalBase === 'C' && newBase === 'T') || (originalBase === 'T' && newBase === 'C');
+      newEvent = {
+        cycle: nextCycleNum,
+        pos: targetIdx + 1,
+        type: 'Base Substitution',
+        desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): Nucleotide substitution (${originalBase} → ${newBase}) [${isTransition ? 'Transition' : 'Transversion'}]`,
+        status: 'MUTATION'
+      };
     }
     else if (typeId === 'tls') {
-      const targetIdx = Math.floor(Math.random() * Math.max(1, newTemplate.length - 2));
+      // Translesion DNA Synthesis (TLS): Pyrimidine Dimer + DinB misinsertion
+      const targetIdx = Math.floor(Math.random() * Math.max(1, newTemplate.length - 1));
       newTemplate[targetIdx] = 'TT';
-      newReplicated[targetIdx] = 'C'; // Pol IV TLS misinsertion
+      newReplicated[targetIdx] = 'C'; // Pol IV TLS misinsertion opposite dimer
       newEvent = {
         cycle: nextCycleNum,
         pos: targetIdx + 1,
         type: 'TLS Bypass Error',
-        desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): T-T Dimer bypassed by Pol IV (DinB), misinserting C`,
+        desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): UV Thymine Dimer (T-T) bypassed by Pol IV (DinB), misinserting Cytosine`,
         status: 'LESION_BYPASS'
       };
     }
     else if (typeId === 'oxidative') {
+      // Oxidative Base Damage: 8-oxoG
       const targetIdx = Math.floor(Math.random() * newTemplate.length);
       newTemplate[targetIdx] = '8oG';
       newReplicated[targetIdx] = 'A'; // 8-oxoG:A mispair
@@ -78,13 +113,14 @@ export default function LiveDnaMutagenesisSimulator({ selectedType }) {
         cycle: nextCycleNum,
         pos: targetIdx + 1,
         type: '8-oxoG Oxidative Damage',
-        desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): Hydroxyl radical oxidized Guanine to 8-oxoG (8-oxoG:A mispair)`,
+        desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): ROS hydroxyl radical oxidized Guanine to 8-oxoG (causes G:C → T:A transversion)`,
         status: 'OXIDATIVE'
       };
     }
     else if (typeId === 'frameshift') {
+      // Frameshift Mutagenesis (+1 / -1 bp)
       const isInsertion = Math.random() > 0.5;
-      const targetIdx = Math.floor(Math.random() * Math.max(1, newTemplate.length - 2));
+      const targetIdx = Math.floor(Math.random() * Math.max(1, newTemplate.length - 1));
       if (isInsertion) {
         newTemplate.splice(targetIdx, 0, 'T');
         newReplicated.splice(targetIdx, 0, 'A');
@@ -92,36 +128,39 @@ export default function LiveDnaMutagenesisSimulator({ selectedType }) {
           cycle: nextCycleNum,
           pos: targetIdx + 1,
           type: '+1 bp Frameshift Insertion',
-          desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): Pol IV slippage inserted +1 bp Thymine`,
+          desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): Pol IV slippage inserted +1 bp Thymine into homopolymer run`,
           status: 'FRAMESHIFT'
         };
       } else {
         if (newTemplate.length > 5) {
+          const removedBase = newTemplate[targetIdx];
           newTemplate.splice(targetIdx, 1);
           newReplicated.splice(targetIdx, 1);
           newEvent = {
             cycle: nextCycleNum,
             pos: targetIdx + 1,
             type: '-1 bp Frameshift Deletion',
-            desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): Polymerase slippage deleted 1 bp`,
+            desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): Polymerase slippage deleted 1 bp (${removedBase})`,
             status: 'FRAMESHIFT'
           };
         }
       }
     }
     else if (typeId === 'alkylation') {
+      // Alkylation Mutagenesis: O6-methylguanine
       const targetIdx = Math.floor(Math.random() * newTemplate.length);
       newTemplate[targetIdx] = 'meG';
-      newReplicated[targetIdx] = 'T';
+      newReplicated[targetIdx] = 'T'; // Pairs with Thymine
       newEvent = {
         cycle: nextCycleNum,
         pos: targetIdx + 1,
         type: 'O6-Methylguanine Alkylation',
-        desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): MNNG alkylated Guanine to O6-meG (pairing with Thymine)`,
+        desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): MNNG alkylation formed O6-meG, pairing with Thymine (fixes G:C → A:T mutation)`,
         status: 'ALKYLATION'
       };
     }
     else if (typeId === 'is_transposition') {
+      // Insertion Sequence Transposition: IS5
       const targetIdx = Math.floor(Math.random() * Math.max(1, newTemplate.length - 1));
       newTemplate.splice(targetIdx, 0, 'IS5');
       newReplicated.splice(targetIdx, 0, 'IS5');
@@ -129,22 +168,22 @@ export default function LiveDnaMutagenesisSimulator({ selectedType }) {
         cycle: nextCycleNum,
         pos: targetIdx + 1,
         type: 'IS5 Transposon Insertion',
-        desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): Stress-induced IS5 transposition inserted element`,
+        desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): Stress-induced IS5 transposition inserted mobile element block`,
         status: 'TRANSPOSON'
       };
     }
     else {
-      // SIM or Spontaneous: Random base substitution
+      // General Fallback Mutation
       const targetIdx = Math.floor(Math.random() * newTemplate.length);
       const originalBase = newTemplate[targetIdx];
-      const newBase = originalBase === 'A' ? 'G' : (originalBase === 'G' ? 'C' : 'T');
+      const newBase = pickDifferentBase(originalBase);
       newTemplate[targetIdx] = newBase;
       newReplicated[targetIdx] = COMPLEMENT_MAP[newBase] || 'A';
       newEvent = {
         cycle: nextCycleNum,
         pos: targetIdx + 1,
-        type: 'DSB Repair Mutation',
-        desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): Stress-induced Pol IV mutagenic error (${originalBase} → ${newBase})`,
+        type: 'Replicative Mutation',
+        desc: `Gen #${nextCycleNum} (Pos #${targetIdx + 1}): Replicative error altered nucleotide (${originalBase} → ${newBase})`,
         status: 'MUTATION'
       };
     }
@@ -226,7 +265,7 @@ export default function LiveDnaMutagenesisSimulator({ selectedType }) {
         <div className="sim-header-title">
           <h4>🧬 Multi-Step Accumulating DNA Mutagenesis & Sequence Alignment</h4>
           <span className="sim-subtitle">
-            Induce multiple continuous mutation events across generations to simulate real cumulative genome divergence
+            Induce multiple continuous mutation events across generations for pathway: <strong>{selectedType?.name || 'SIM'}</strong>
           </span>
         </div>
         <div className="sim-header-actions">
@@ -234,7 +273,7 @@ export default function LiveDnaMutagenesisSimulator({ selectedType }) {
             className="sim-action-btn primary"
             onClick={() => induceSingleMutation()}
           >
-            ⚡ Induce 1× Mutation
+            ⚡ Induce 1× Mutation ({selectedType?.name?.split(' ')[0] || 'SIM'})
           </button>
           <button
             className="sim-action-btn burst"
